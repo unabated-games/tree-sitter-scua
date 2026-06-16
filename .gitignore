@@ -1,0 +1,9 @@
+node_modules/
+build/
+target/
+*.wasm
+*.so
+*.dylib
+*.o
+# Keep the generated parser (src/parser.c, src/grammar.json, src/node-types.json, src/tree_sitter/)
+# committed — Zed and other consumers compile the grammar from it without tree-sitter-cli.

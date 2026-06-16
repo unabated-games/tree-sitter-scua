@@ -1,0 +1,9 @@
+{
+  "name": "tree-sitter-scua",
+  "version": "0.1.0",
+  "description": "tree-sitter grammar for the SCUA scripting language",
+  "main": "bindings/node",
+  "dependencies": { "node-addon-api": "^7.0.0", "node-gyp-build": "^4.6.0" },
+  "devDependencies": { "tree-sitter-cli": "^0.22.0" },
+  "tree-sitter": [{ "scope": "source.scua", "file-types": ["scua"] }]
+}
