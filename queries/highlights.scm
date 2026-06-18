@@ -9,14 +9,18 @@
   "while" "do" "end" "for" "in"
   "return" "match" "try" "rescue"
   "on" "ask" "tell" "state"
+  "comptime" "import" "as" "where"
 ] @keyword
 (break_statement) @keyword
 
-["and" "or" "not"] @keyword.operator
+["and" "or" "not" "matches"] @keyword.operator
+
+; log-level statement keywords (ADR-0029)
+["trace" "debug" "info" "warn" "severe"] @keyword
 
 ["let" "const"] @keyword
 
-["fn" "record" "type" "partition" "migrate"] @keyword
+["fn" "record" "enum" "contract" "type" "partition" "migrate"] @keyword
 
 ; ---- literals ----
 [(integer) (float) (duration)] @number
@@ -25,6 +29,7 @@
 [(string) (path)] @string
 (interpolated_string) @string
 (escape_sequence) @string.escape
+(format_spec) @string.special
 
 ; interpolation braces + the embedded expression read normally
 (interpolation ["{" "}"] @punctuation.special)
@@ -37,14 +42,24 @@
 (function_declaration name: (identifier) @function)
 (function_expression) @function
 (record_declaration name: (type_identifier) @type)
+(enum_declaration name: (type_identifier) @type)
+(enum_variant name: (type_identifier) @constructor)
+(enum_field name: (identifier) @property) ; named payload field (documentation; matched positionally)
+(let_declaration name: (type_identifier) @constant) ; an UPPER_CASE `const NAME` binding
+(contract_declaration name: (type_identifier) @type)
+(contract_clause label: (identifier) @property)
 (type_declaration name: (type_identifier) @type)
 (partition_declaration name: (type_identifier) @type)
 (migrate_declaration name: (type_identifier) @type)
+(import_declaration name: (identifier) @namespace)
+(import_declaration alias: (identifier) @namespace)
 
 ; ---- fields & calls ----
 (record_field name: (identifier) @property)
 (table_field name: (identifier) @property)
 (field_expression field: (identifier) @property)
+(field_expression field: (type_identifier) @constructor) ; Enum.Variant access
+(enum_pattern enum: (type_identifier) @type variant: (type_identifier) @constructor)
 (call_expression function: (identifier) @function.call)
 (call_expression function: (type_identifier) @constructor) ; Ok(), Error(), Player(), tags
 (tag_pattern tag: (type_identifier) @constructor)
