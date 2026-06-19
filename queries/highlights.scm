@@ -62,6 +62,8 @@
 (enum_pattern enum: (type_identifier) @type variant: (type_identifier) @constructor)
 (call_expression function: (identifier) @function.call)
 (call_expression function: (type_identifier) @constructor) ; Ok(), Error(), Player(), tags
+; a called member is a method, not a plain property: `rand.int(...)`, `str.trim(...)`, `list.map(...)`
+(call_expression function: (field_expression field: (identifier) @function.method))
 (tag_pattern tag: (type_identifier) @constructor)
 
 ; ---- parameters & variables ----
