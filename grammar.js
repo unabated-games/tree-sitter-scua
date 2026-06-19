@@ -328,7 +328,7 @@ module.exports = grammar({
     // `fn(T, U) -> R` — a first-class function type (M6).
     function_type: $ => prec.right(seq('fn', '(', commaSep($._type), ')', optional(seq('->', $._type)))),
 
-    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'string', 'bool', 'boolean', 'any', 'nil'),
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'string', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => seq('{', $._type, '}'),

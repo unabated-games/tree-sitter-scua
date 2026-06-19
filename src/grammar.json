@@ -3498,6 +3498,10 @@
         },
         {
           "type": "STRING",
+          "value": "big"
+        },
+        {
+          "type": "STRING",
           "value": "string"
         },
         {
