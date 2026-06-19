@@ -103,17 +103,19 @@ module.exports = grammar({
 
     let_declaration: $ => seq(
       field('kind', choice('let', 'const')),
-      field('name', choice($.identifier, $.type_identifier)), // a `const` is conventionally UPPER_CASE
+      // One name, or several for a multi-binding `let a, b = f()` (ADR-0035). A `: type` applies only to
+      // the single-name form; the multi form is untyped.
+      commaSep1(field('name', choice($.identifier, $.type_identifier))), // a `const` is conventionally UPPER_CASE
       optional(seq(':', field('type', $._type))),
       '=',
-      field('value', $._expression),
+      commaSep1(field('value', $._expression)),
     ),
 
     function_declaration: $ => seq(
       'fn',
       field('name', $.identifier),
       $._params,
-      optional(seq('->', field('return_type', $._type))),
+      optional(seq('->', field('return_type', $._return_type))),
       repeat($._statement),
       'end',
     ),
@@ -163,7 +165,7 @@ module.exports = grammar({
       'end',
     ),
 
-    return_statement: $ => prec.right(seq('return', optional($._expression))),
+    return_statement: $ => prec.right(seq('return', optional(commaSep1($._expression)))),
 
     if_statement: $ => seq(
       'if', field('condition', $._expression), 'then', repeat($._statement),
@@ -225,7 +227,7 @@ module.exports = grammar({
     // the whole call greedily and leave nothing for the explicit tail.
     tell_statement: $ => seq('tell', $._expression),
 
-    assignment: $ => seq(field('target', $._lvalue), '=', field('value', $._expression)),
+    assignment: $ => seq(commaSep1(field('target', $._lvalue)), '=', commaSep1(field('value', $._expression))),
 
     _lvalue: $ => choice($.identifier, $.field_expression, $.index_expression, $.path_access),
 
@@ -269,7 +271,7 @@ module.exports = grammar({
     // trailing-expression constructs (this grammar is for highlighting — exact binding doesn't matter).
     range: $ => prec.left(3, seq(field('start', $._expression), ':', field('end', $._expression), optional(seq(':', field('step', $._expression))))),
 
-    function_expression: $ => seq('fn', $._params, optional(seq('->', $._type)), repeat($._statement), 'end'),
+    function_expression: $ => seq('fn', $._params, optional(seq('->', $._return_type)), repeat($._statement), 'end'),
 
     call_expression: $ => prec(14, seq(field('function', $._expression), '(', commaSep($._expression), ')')),
 
@@ -325,8 +327,12 @@ module.exports = grammar({
       $.function_type,
     ),
 
-    // `fn(T, U) -> R` — a first-class function type (M6).
-    function_type: $ => prec.right(seq('fn', '(', commaSep($._type), ')', optional(seq('->', $._type)))),
+    // `fn(T, U) -> R` — a first-class function type (M6). The return may be a `(T, U)` tuple (ADR-0035).
+    function_type: $ => prec.right(seq('fn', '(', commaSep($._type), ')', optional(seq('->', $._return_type)))),
+
+    // A function's return: a single type, or a `(T, U)` tuple denoting several return values (ADR-0035).
+    _return_type: $ => choice($._type, $.tuple_type),
+    tuple_type: $ => seq('(', commaSep1($._type), ')'),
 
     primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'string', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
