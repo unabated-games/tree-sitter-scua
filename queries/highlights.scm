@@ -23,7 +23,7 @@
 ["fn" "record" "enum" "contract" "type" "partition" "migrate"] @keyword
 
 ; ---- literals ----
-[(integer) (float) (duration)] @number
+[(integer) (float) (decimal) (duration)] @number
 (boolean) @constant.builtin
 (nil) @constant.builtin
 [(string) (path)] @string

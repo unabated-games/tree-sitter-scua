@@ -3494,6 +3494,10 @@
         },
         {
           "type": "STRING",
+          "value": "decimal"
+        },
+        {
+          "type": "STRING",
           "value": "string"
         },
         {
@@ -3662,6 +3666,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "decimal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "float"
         },
         {
@@ -3711,6 +3719,13 @@
       "content": {
         "type": "PATTERN",
         "value": "[0-9][0-9_]*\\.[0-9_]+([eE][-+]?[0-9]+)?"
+      }
+    },
+    "decimal": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[0-9][0-9_]*(\\.[0-9_]+)?d"
       }
     },
     "duration": {

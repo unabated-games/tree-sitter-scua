@@ -28,6 +28,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -124,6 +128,10 @@
         },
         {
           "type": "boolean",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -246,6 +254,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -382,6 +394,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -491,6 +507,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -610,6 +630,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -714,6 +738,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -825,6 +853,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -1049,6 +1081,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -1424,6 +1460,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -1510,6 +1550,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -1632,6 +1676,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -1760,6 +1808,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -1881,6 +1933,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -1957,6 +2013,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -2704,6 +2764,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -2944,6 +3008,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -3048,6 +3116,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -3178,6 +3250,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -3358,6 +3434,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -3497,6 +3577,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -3608,6 +3692,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -3699,6 +3787,10 @@
           },
           {
             "type": "boolean",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -3881,6 +3973,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -4194,6 +4290,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -4270,6 +4370,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -4419,6 +4523,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -4535,6 +4643,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -4641,6 +4753,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -4744,6 +4860,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -4866,6 +4986,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -4995,6 +5119,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -5108,6 +5236,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -5320,6 +5452,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -5575,6 +5711,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -5679,6 +5819,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -5917,6 +6061,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "do_block",
           "named": true
         },
@@ -6118,6 +6266,10 @@
             "named": true
           },
           {
+            "type": "decimal",
+            "named": true
+          },
+          {
             "type": "duration",
             "named": true
           },
@@ -6267,6 +6419,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -6443,6 +6599,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -6519,6 +6679,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -6633,6 +6797,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -6741,6 +6909,10 @@
         },
         {
           "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "decimal",
           "named": true
         },
         {
@@ -7023,6 +7195,10 @@
           "named": true
         },
         {
+          "type": "decimal",
+          "named": true
+        },
+        {
           "type": "duration",
           "named": true
         },
@@ -7170,6 +7346,10 @@
           },
           {
             "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "decimal",
             "named": true
           },
           {
@@ -7534,6 +7714,14 @@
   {
     "type": "debug",
     "named": false
+  },
+  {
+    "type": "decimal",
+    "named": false
+  },
+  {
+    "type": "decimal",
+    "named": true
   },
   {
     "type": "default",

@@ -328,7 +328,7 @@ module.exports = grammar({
     // `fn(T, U) -> R` — a first-class function type (M6).
     function_type: $ => prec.right(seq('fn', '(', commaSep($._type), ')', optional(seq('->', $._type)))),
 
-    primitive_type: _ => choice('number', 'int', 'float', 'string', 'bool', 'boolean', 'any', 'nil'),
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'string', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => seq('{', $._type, '}'),
@@ -337,6 +337,7 @@ module.exports = grammar({
     // ---- literals ----
     _literal: $ => choice(
       $.duration,
+      $.decimal,
       $.float,
       $.integer,
       $.string,
@@ -348,6 +349,7 @@ module.exports = grammar({
 
     integer: _ => token(choice(/0x[0-9a-fA-F_]+/, /[0-9][0-9_]*/)),
     float: _ => token(/[0-9][0-9_]*\.[0-9_]+([eE][-+]?[0-9]+)?/),
+    decimal: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?d/), // exact fixed-point literal `12.34d` (ADR-0033)
     duration: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?(ms|min|s|h)/),
     boolean: _ => choice('true', 'false'),
     nil: _ => 'nil',
