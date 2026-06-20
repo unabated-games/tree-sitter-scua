@@ -26,7 +26,7 @@
 [(integer) (float) (decimal) (duration)] @number
 (boolean) @constant.builtin
 (nil) @constant.builtin
-[(string) (path)] @string
+[(string) (path) (key_lit)] @string
 (interpolated_string) @string
 (escape_sequence) @string.escape
 (format_spec) @string.special

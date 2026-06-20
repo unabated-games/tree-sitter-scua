@@ -30,6 +30,7 @@ module.exports = grammar({
       $.let_declaration,
       $.function_declaration,
       $.record_declaration,
+      $.interface_declaration,
       $.enum_declaration,
       $.contract_declaration,
       $.type_declaration,
@@ -132,6 +133,21 @@ module.exports = grammar({
     record_field: $ => choice(
       seq(field('name', $.identifier), ':', field('type', $._type), optional(seq('=', field('default', $._expression))), optional(seq('where', field('refinement', $._expression)))),
       seq('[', $._type, ']', ':', $._type), // open indexer: [string]: any
+    ),
+
+    // `interface Name { fn m(self [, p: T]*) [-> R]  … }` — a structural method contract (design/24).
+    interface_declaration: $ => seq(
+      'interface',
+      field('name', $.type_identifier),
+      '{',
+      repeat($.interface_method),
+      '}',
+    ),
+    interface_method: $ => seq(
+      'fn', field('name', $.identifier),
+      '(', 'self', repeat(seq(',', $.identifier, ':', $._type)), ')',
+      optional(seq('->', $._return_type)),
+      optional(','),
     ),
 
     type_declaration: $ => seq('type', field('name', $.type_identifier), '=', field('type', $._type)),
@@ -256,8 +272,13 @@ module.exports = grammar({
       $.try_expression,
       $.ask_expression,
       $.recv_wait,
+      $.import_expression,
       $.parenthesized,
     ),
+
+    // `import(spec)` — the dynamic/expression import (design/11 Slice 2b). Higher precedence than a plain
+    // call so `import(x)` isn't read as the identifier `import` applied to `x`.
+    import_expression: $ => prec(15, seq('import', '(', field('specifier', $._expression), ')')),
 
     // `wait_for(Tag)` — selective receive as a value (`let p = wait_for(Priority)`); also a select head.
     recv_wait: $ => seq('wait_for', '(', field('tag', $.type_identifier), ')'),
@@ -347,6 +368,7 @@ module.exports = grammar({
       $.float,
       $.integer,
       $.string,
+      $.key_lit,
       $.interpolated_string,
       $.path,
       $.boolean,
@@ -363,6 +385,9 @@ module.exports = grammar({
     // The closing delimiters are `token.immediate` so the lexer never skips extras (whitespace/comments)
     // inside a string — otherwise a `--` right after the opening `"` lexes as a line comment.
     string: $ => seq('"', repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+
+    // An interned `key` literal `#"name"` (ADR-0037). The `"` is `token.immediate` so only `#"` (no space) opens one.
+    key_lit: $ => seq('#', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
     interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, token.immediate('{{'), token.immediate('}}'), token.immediate(prec(1, /[^`\\{}]+/)))), token.immediate('`')),
 
