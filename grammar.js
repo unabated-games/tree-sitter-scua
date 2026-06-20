@@ -386,8 +386,8 @@ module.exports = grammar({
     // inside a string — otherwise a `--` right after the opening `"` lexes as a line comment.
     string: $ => seq('"', repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
-    // An interned `key` literal `#"name"` (ADR-0037). The `"` is `token.immediate` so only `#"` (no space) opens one.
-    key_lit: $ => seq('#', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    // An interned `key` literal `$"name"` (ADR-0037). The `"` is `token.immediate` so only `$"` (no space) opens one.
+    key_lit: $ => seq('$', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
     interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, token.immediate('{{'), token.immediate('}}'), token.immediate(prec(1, /[^`\\{}]+/)))), token.immediate('`')),
 
