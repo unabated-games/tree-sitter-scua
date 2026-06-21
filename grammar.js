@@ -32,6 +32,7 @@ module.exports = grammar({
       $.record_declaration,
       $.interface_declaration,
       $.enum_declaration,
+      $.flags_declaration,
       $.contract_declaration,
       $.type_declaration,
       $.partition_declaration,
@@ -76,6 +77,10 @@ module.exports = grammar({
     // A variant payload field: a bare type (`Patrol(int)`) or a named one (`Chase(target: int)` — names
     // are documentation, matched positionally).
     enum_field: $ => seq(optional(seq(field('name', $.identifier), ':')), field('type', $._type)),
+
+    // `flags Name  A  B  C  end` (research/32): a typed bit-set; each variant is a bare name (bit `1<<i`).
+    flags_declaration: $ => seq('flags', field('name', $.type_identifier), repeat($.flags_variant), 'end'),
+    flags_variant: $ => field('name', $.type_identifier),
 
     // `contract Name(p)  <clause>*  end` (ADR-0028): labelled boolean clauses with optional `else "reason"`.
     contract_declaration: $ => seq('contract', field('name', $.type_identifier), $._params, repeat($.contract_clause), 'end'),
@@ -273,8 +278,23 @@ module.exports = grammar({
       $.ask_expression,
       $.recv_wait,
       $.import_expression,
+      $.if_expression,
+      $.match_expression,
       $.parenthesized,
     ),
+
+    // `if c then a [elseif c then a]* else b end` as a value (a total conditional — `else` required).
+    // Distinct from `if_statement` (whose branches are statement lists); shares the keyword only.
+    if_expression: $ => prec(1, seq(
+      'if', field('condition', $._expression), 'then', field('consequence', $._expression),
+      repeat(seq('elseif', field('condition', $._expression), 'then', field('consequence', $._expression))),
+      'else', field('alternative', $._expression), 'end',
+    )),
+
+    // `match subj  pat [when g] -> expr  … end` as a value. Each arm body is an expression.
+    match_expression: $ => prec(1, seq('match', field('subject', $._expression), repeat($.match_expression_arm), 'end')),
+
+    match_expression_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', field('body', $._expression)),
 
     // `import(spec)` — the dynamic/expression import (design/11 Slice 2b). Higher precedence than a plain
     // call so `import(x)` isn't read as the identifier `import` applied to `x`.
