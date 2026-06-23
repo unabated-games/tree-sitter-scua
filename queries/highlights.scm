@@ -9,6 +9,7 @@
   "while" "do" "end" "for" "in"
   "return" "match" "try" "rescue"
   "on" "ask" "tell" "state"
+  "select" "wait_for"
   "comptime" "import" "as" "where"
 ] @keyword
 (break_statement) @keyword
@@ -20,7 +21,7 @@
 
 ["let" "const"] @keyword
 
-["fn" "record" "enum" "flags" "contract" "type" "partition" "migrate"] @keyword
+["fn" "record" "enum" "flags" "contract" "interface" "type" "partition" "migrate"] @keyword
 
 ; ---- literals ----
 [(integer) (float) (decimal) (duration)] @number

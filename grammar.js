@@ -375,7 +375,7 @@ module.exports = grammar({
     _return_type: $ => choice($._type, $.tuple_type),
     tuple_type: $ => seq('(', commaSep1($._type), ')'),
 
-    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'string', 'bool', 'boolean', 'any', 'nil'),
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => seq('{', $._type, '}'),

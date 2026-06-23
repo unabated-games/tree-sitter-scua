@@ -9646,6 +9646,10 @@
     "named": true
   },
   {
+    "type": "bytes",
+    "named": false
+  },
+  {
     "type": "comptime",
     "named": false
   },
@@ -9759,6 +9763,10 @@
   },
   {
     "type": "interface",
+    "named": false
+  },
+  {
+    "type": "key",
     "named": false
   },
   {

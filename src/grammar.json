@@ -4053,6 +4053,14 @@
         },
         {
           "type": "STRING",
+          "value": "bytes"
+        },
+        {
+          "type": "STRING",
+          "value": "key"
+        },
+        {
+          "type": "STRING",
           "value": "bool"
         },
         {
