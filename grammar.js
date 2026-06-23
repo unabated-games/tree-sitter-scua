@@ -375,10 +375,14 @@ module.exports = grammar({
     _return_type: $ => choice($._type, $.tuple_type),
     tuple_type: $ => seq('(', commaSep1($._type), ')'),
 
-    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
+    // Sized numeric kinds (f32/i32/u8/u16/u32) and the packed vector kinds (vec2/vec3/vec4) are the element
+    // types of unboxed numeric buffers — `{ f32 }`, `{ vec2 }` (ADR-0046). They're valid type names in any
+    // type position; listing them here (keyword extraction keeps `vec2(…)` a normal call in expression
+    // position) is also what lets the brace/bracket array forms parse, since a `type_identifier` is uppercase.
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'f32', 'i32', 'u8', 'u16', 'u32', 'vec2', 'vec3', 'vec4', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
-    array_type: $ => seq('{', $._type, '}'),
+    array_type: $ => choice(seq('{', $._type, '}'), seq('[', $._type, ']')), // both spellings (`[T]` / `{ T }`)
     table_type: $ => seq('{', sepTrailing(',', seq($.identifier, ':', $._type)), '}'),
 
     // ---- literals ----

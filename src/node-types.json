@@ -9706,6 +9706,10 @@
     "named": true
   },
   {
+    "type": "f32",
+    "named": false
+  },
+  {
     "type": "false",
     "named": false
   },
@@ -9732,6 +9736,10 @@
   {
     "type": "format_spec",
     "named": true
+  },
+  {
+    "type": "i32",
+    "named": false
   },
   {
     "type": "identifier",
@@ -9885,6 +9893,30 @@
   {
     "type": "type_identifier",
     "named": true
+  },
+  {
+    "type": "u16",
+    "named": false
+  },
+  {
+    "type": "u32",
+    "named": false
+  },
+  {
+    "type": "u8",
+    "named": false
+  },
+  {
+    "type": "vec2",
+    "named": false
+  },
+  {
+    "type": "vec3",
+    "named": false
+  },
+  {
+    "type": "vec4",
+    "named": false
   },
   {
     "type": "wait",
