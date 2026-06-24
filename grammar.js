@@ -35,6 +35,7 @@ module.exports = grammar({
       $.flags_declaration,
       $.contract_declaration,
       $.type_declaration,
+      $.handle_declaration,
       $.partition_declaration,
       $.migrate_declaration,
       $.import_declaration,
@@ -119,7 +120,9 @@ module.exports = grammar({
 
     function_declaration: $ => seq(
       'fn',
-      field('name', $.identifier),
+      // The name may be lower- or upper-case: SCUA doesn't reserve casing for functions, and host-API
+      // declarations (`--!declare`) routinely use PascalCase native names (raylib's `LoadTexture`).
+      field('name', choice($.identifier, $.type_identifier)),
       $._params,
       optional(seq('->', field('return_type', $._return_type))),
       repeat($._statement),
@@ -156,6 +159,9 @@ module.exports = grammar({
     ),
 
     type_declaration: $ => seq('type', field('name', $.type_identifier), '=', field('type', $._type)),
+    // `handle Name` — an opaque host-resource handle type (ADR-0051), only in `--!declare` files. `handle`
+    // is a contextual keyword (keyword extraction keeps it usable as an identifier elsewhere).
+    handle_declaration: $ => seq('handle', field('name', $.type_identifier)),
 
     partition_declaration: $ => seq(
       'partition',

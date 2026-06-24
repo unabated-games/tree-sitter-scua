@@ -21,7 +21,7 @@
 
 ["let" "const"] @keyword
 
-["fn" "record" "enum" "flags" "contract" "interface" "type" "partition" "migrate"] @keyword
+["fn" "record" "enum" "flags" "contract" "interface" "type" "handle" "partition" "migrate"] @keyword
 
 ; ---- literals ----
 [(integer) (float) (decimal) (duration)] @number

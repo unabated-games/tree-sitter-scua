@@ -47,6 +47,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "handle_declaration"
+        },
+        {
+          "type": "SYMBOL",
           "name": "partition_declaration"
         },
         {
@@ -921,8 +925,17 @@
           "type": "FIELD",
           "name": "name",
           "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "type_identifier"
+              }
+            ]
           }
         },
         {
@@ -1326,6 +1339,23 @@
           "content": {
             "type": "SYMBOL",
             "name": "_type"
+          }
+        }
+      ]
+    },
+    "handle_declaration": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "handle"
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type_identifier"
           }
         }
       ]
