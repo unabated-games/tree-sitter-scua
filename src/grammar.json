@@ -51,6 +51,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "gate_declaration"
+        },
+        {
+          "type": "SYMBOL",
           "name": "partition_declaration"
         },
         {
@@ -1125,14 +1129,14 @@
                   "members": [
                     {
                       "type": "STRING",
-                      "value": "="
+                      "value": "gated"
                     },
                     {
                       "type": "FIELD",
-                      "name": "default",
+                      "name": "gate",
                       "content": {
                         "type": "SYMBOL",
-                        "name": "_expression"
+                        "name": "type_identifier"
                       }
                     }
                   ]
@@ -1155,6 +1159,31 @@
                     {
                       "type": "FIELD",
                       "name": "refinement",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_expression"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "="
+                    },
+                    {
+                      "type": "FIELD",
+                      "name": "default",
                       "content": {
                         "type": "SYMBOL",
                         "name": "_expression"
@@ -1353,6 +1382,59 @@
         {
           "type": "FIELD",
           "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type_identifier"
+          }
+        }
+      ]
+    },
+    "gate_declaration": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "gate"
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type_identifier"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "gate_audience"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "end"
+        }
+      ]
+    },
+    "gate_audience": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "enum",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type_identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "FIELD",
+          "name": "variant",
           "content": {
             "type": "SYMBOL",
             "name": "type_identifier"

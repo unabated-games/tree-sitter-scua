@@ -1103,6 +1103,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -1429,6 +1433,10 @@
         },
         {
           "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "gate_declaration",
           "named": true
         },
         {
@@ -2417,6 +2425,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -2601,6 +2613,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -2752,6 +2768,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -2894,6 +2914,58 @@
     }
   },
   {
+    "type": "gate_audience",
+    "named": true,
+    "fields": {
+      "enum": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "variant": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "gate_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "gate_audience",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "handle_declaration",
     "named": true,
     "fields": {
@@ -2988,6 +3060,10 @@
         },
         {
           "type": "function_type",
+          "named": true
+        },
+        {
+          "type": "gate_declaration",
           "named": true
         },
         {
@@ -3642,6 +3718,10 @@
         },
         {
           "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "gate_declaration",
           "named": true
         },
         {
@@ -4982,6 +5062,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -5739,6 +5823,10 @@
         },
         {
           "type": "function_type",
+          "named": true
+        },
+        {
+          "type": "gate_declaration",
           "named": true
         },
         {
@@ -6923,6 +7011,16 @@
           }
         ]
       },
+      "gate": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": false,
@@ -7360,6 +7458,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -7753,6 +7855,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -7909,6 +8015,10 @@
         },
         {
           "type": "function_expression",
+          "named": true
+        },
+        {
+          "type": "gate_declaration",
           "named": true
         },
         {
@@ -8977,6 +9087,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -9482,6 +9596,10 @@
           "named": true
         },
         {
+          "type": "gate_declaration",
+          "named": true
+        },
+        {
           "type": "handle_declaration",
           "named": true
         },
@@ -9812,6 +9930,14 @@
   {
     "type": "format_spec",
     "named": true
+  },
+  {
+    "type": "gate",
+    "named": false
+  },
+  {
+    "type": "gated",
+    "named": false
   },
   {
     "type": "handle",

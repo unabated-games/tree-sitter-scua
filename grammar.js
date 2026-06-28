@@ -36,6 +36,7 @@ module.exports = grammar({
       $.contract_declaration,
       $.type_declaration,
       $.handle_declaration,
+      $.gate_declaration,
       $.partition_declaration,
       $.migrate_declaration,
       $.import_declaration,
@@ -139,7 +140,8 @@ module.exports = grammar({
     ),
 
     record_field: $ => choice(
-      seq(field('name', $.identifier), ':', field('type', $._type), optional(seq('=', field('default', $._expression))), optional(seq('where', field('refinement', $._expression)))),
+      // `name: T [gated Gate] [where <pred>] [= default]` — modifier order matches the parser (ADR-0052/0028).
+      seq(field('name', $.identifier), ':', field('type', $._type), optional(seq('gated', field('gate', $.type_identifier))), optional(seq('where', field('refinement', $._expression))), optional(seq('=', field('default', $._expression)))),
       seq('[', $._type, ']', ':', $._type), // open indexer: [string]: any
     ),
 
@@ -162,6 +164,11 @@ module.exports = grammar({
     // `handle Name` — an opaque host-resource handle type (ADR-0051), only in `--!declare` files. `handle`
     // is a contextual keyword (keyword extraction keeps it usable as an identifier elsewhere).
     handle_declaration: $ => seq('handle', field('name', $.type_identifier)),
+
+    // `gate Name  Aud.A  Aud.B  end` — a named set of audiences (enum variants) a `gated` field is
+    // visible to when projecting for an audience (ADR-0052 slice 4). `gate`/`gated` are contextual keywords.
+    gate_declaration: $ => seq('gate', field('name', $.type_identifier), repeat($.gate_audience), 'end'),
+    gate_audience: $ => seq(field('enum', $.type_identifier), '.', field('variant', $.type_identifier)),
 
     partition_declaration: $ => seq(
       'partition',
