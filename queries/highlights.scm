@@ -87,4 +87,4 @@
 
 ; built-in / standard functions, highlighted distinctly when called
 ((call_expression function: (identifier) @function.builtin)
- (#match? @function.builtin "^(print|len|push|pop|remove|contains|slice|range|keys|values|get|set|getStrict|pcall|error|as|project|spawn|wait|now|dt|coroutine|resume|yield|status|actor|reply|vec2|vec3|vec4|quat|quat_id|quat_axis_angle|mat[234](_id|_translate|_scale|_rotate)?|dot|cross|length|normalize|ms|seconds|minutes|min|max)$"))
+ (#match? @function.builtin "^(print|len|push|pop|remove|contains|slice|range|keys|values|get|set|getStrict|pcall|error|as|project|spawn|wait|now|dt|coroutine|resume|yield|status|actor|reply|vec2|vec3|vec4|quat|quat_id|quat_axis_angle|mat[234](_id|_translate|_scale|_rotate)?|dot|cross|length|normalize|rect|aabox|sphere|capsule|ray|plane|area|volume|center|size|radius|normal|distance|closest_point|origin|dir|point_at|intersect|ms|seconds|minutes|min|max)$"))
