@@ -71,7 +71,7 @@ module.exports = grammar({
 
     // `enum Name  A  B(int)  C = 27  end` (ADR-0026/0027): payload-free ⇒ int-backed; a variant may carry
     // a positional payload or an explicit discriminant.
-    enum_declaration: $ => seq('enum', field('name', $.type_identifier), repeat($.enum_variant), 'end'),
+    enum_declaration: $ => seq('enum', field('name', $.type_identifier), '{', sepTrailing(',', $.enum_variant), '}'),
     enum_variant: $ => seq(
       field('name', $.type_identifier),
       optional(choice(seq('(', commaSep($.enum_field), ')'), seq('=', field('value', $._expression)))),
@@ -81,7 +81,7 @@ module.exports = grammar({
     enum_field: $ => seq(optional(seq(field('name', $.identifier), ':')), field('type', $._type)),
 
     // `flags Name  A  B  C  end` (research/32): a typed bit-set; each variant is a bare name (bit `1<<i`).
-    flags_declaration: $ => seq('flags', field('name', $.type_identifier), repeat($.flags_variant), 'end'),
+    flags_declaration: $ => seq('flags', field('name', $.type_identifier), '{', sepTrailing(',', $.flags_variant), '}'),
     flags_variant: $ => field('name', $.type_identifier),
 
     // `contract Name(p)  <clause>*  end` (ADR-0028): labelled boolean clauses with optional `else "reason"`.
@@ -167,7 +167,7 @@ module.exports = grammar({
 
     // `gate Name  Aud.A  Aud.B  end` — a named set of audiences (enum variants) a `gated` field is
     // visible to when projecting for an audience (ADR-0052 slice 4). `gate`/`gated` are contextual keywords.
-    gate_declaration: $ => seq('gate', field('name', $.type_identifier), repeat($.gate_audience), 'end'),
+    gate_declaration: $ => seq('gate', field('name', $.type_identifier), '{', sepTrailing(',', $.gate_audience), '}'),
     gate_audience: $ => seq(field('enum', $.type_identifier), '.', field('variant', $.type_identifier)),
 
     partition_declaration: $ => seq(
