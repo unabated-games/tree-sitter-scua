@@ -392,7 +392,7 @@ module.exports = grammar({
     // types of unboxed numeric buffers — `{ f32 }`, `{ vec2 }` (ADR-0046). They're valid type names in any
     // type position; listing them here (keyword extraction keeps `vec2(…)` a normal call in expression
     // position) is also what lets the brace/bracket array forms parse, since a `type_identifier` is uppercase.
-    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'f32', 'i32', 'u8', 'u16', 'u32', 'vec2', 'vec3', 'vec4', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'big', 'f32', 'i32', 'u8', 'u16', 'u32', 'vec2', 'vec3', 'vec4', 'color', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => choice(seq('{', $._type, '}'), seq('[', $._type, ']')), // both spellings (`[T]` / `{ T }`)
@@ -406,6 +406,7 @@ module.exports = grammar({
       $.integer,
       $.string,
       $.key_lit,
+      $.color,
       $.interpolated_string,
       $.path,
       $.boolean,
@@ -413,6 +414,7 @@ module.exports = grammar({
     ),
 
     integer: _ => token(choice(/0x[0-9a-fA-F_]+/, /[0-9][0-9_]*/)),
+    color: _ => token(/#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})/), // `#rrggbb[aa]` / `#rgb[a]` sRGB color literal (ADR-0056)
     float: _ => token(/[0-9][0-9_]*\.[0-9_]+([eE][-+]?[0-9]+)?/),
     decimal: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?d/), // exact fixed-point literal `12.34d` (ADR-0033)
     duration: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?(ms|min|s|h)/),

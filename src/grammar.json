@@ -4319,6 +4319,10 @@
         },
         {
           "type": "STRING",
+          "value": "color"
+        },
+        {
+          "type": "STRING",
           "value": "string"
         },
         {
@@ -4537,6 +4541,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "color"
+        },
+        {
+          "type": "SYMBOL",
           "name": "interpolated_string"
         },
         {
@@ -4567,6 +4575,13 @@
             "value": "[0-9][0-9_]*"
           }
         ]
+      }
+    },
+    "color": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})"
       }
     },
     "float": {
