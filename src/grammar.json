@@ -4283,6 +4283,10 @@
         },
         {
           "type": "STRING",
+          "value": "money"
+        },
+        {
+          "type": "STRING",
           "value": "big"
         },
         {
@@ -4320,6 +4324,14 @@
         {
           "type": "STRING",
           "value": "color"
+        },
+        {
+          "type": "STRING",
+          "value": "datetime"
+        },
+        {
+          "type": "STRING",
+          "value": "instant"
         },
         {
           "type": "STRING",
@@ -4517,6 +4529,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "money"
+        },
+        {
+          "type": "SYMBOL",
           "name": "duration"
         },
         {
@@ -4596,6 +4612,13 @@
       "content": {
         "type": "PATTERN",
         "value": "[0-9][0-9_]*(\\.[0-9_]+)?d"
+      }
+    },
+    "money": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[0-9][0-9_]*(\\.[0-9_]+)?[ \\t]+[A-Z]{3}"
       }
     },
     "duration": {
