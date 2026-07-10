@@ -4079,27 +4079,61 @@
       ]
     },
     "table_field": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          }
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "name",
+              "content": {
+                "type": "SYMBOL",
+                "name": "identifier"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "FIELD",
+              "name": "value",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            }
+          ]
         },
         {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "FIELD",
-          "name": "value",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_expression"
-          }
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "@"
+            },
+            {
+              "type": "FIELD",
+              "name": "directive",
+              "content": {
+                "type": "SYMBOL",
+                "name": "identifier"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "FIELD",
+              "name": "value",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            }
+          ]
         }
       ]
     },
@@ -4295,6 +4329,10 @@
         },
         {
           "type": "STRING",
+          "value": "f64"
+        },
+        {
+          "type": "STRING",
           "value": "i32"
         },
         {
@@ -4320,6 +4358,46 @@
         {
           "type": "STRING",
           "value": "vec4"
+        },
+        {
+          "type": "STRING",
+          "value": "quat"
+        },
+        {
+          "type": "STRING",
+          "value": "mat2"
+        },
+        {
+          "type": "STRING",
+          "value": "mat3"
+        },
+        {
+          "type": "STRING",
+          "value": "mat4"
+        },
+        {
+          "type": "STRING",
+          "value": "rect"
+        },
+        {
+          "type": "STRING",
+          "value": "aabox"
+        },
+        {
+          "type": "STRING",
+          "value": "sphere"
+        },
+        {
+          "type": "STRING",
+          "value": "capsule"
+        },
+        {
+          "type": "STRING",
+          "value": "ray"
+        },
+        {
+          "type": "STRING",
+          "value": "plane"
         },
         {
           "type": "STRING",
@@ -4557,6 +4635,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "bytes_lit"
+        },
+        {
+          "type": "SYMBOL",
           "name": "color"
         },
         {
@@ -4730,6 +4812,52 @@
         }
       ]
     },
+    "bytes_lit": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "b"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "\""
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "escape_sequence"
+              },
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 1,
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[^\"\\\\]+"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "\""
+          }
+        }
+      ]
+    },
     "interpolated_string": {
       "type": "SEQ",
       "members": [
@@ -4833,34 +4961,28 @@
       }
     },
     "path": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "path"
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "path"
+          },
+          {
+            "type": "STRING",
+            "value": "\""
+          },
+          {
+            "type": "PATTERN",
+            "value": "[^\"]*"
+          },
+          {
             "type": "STRING",
             "value": "\""
           }
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "IMMEDIATE_TOKEN",
-            "content": {
-              "type": "PATTERN",
-              "value": "[^\"]+"
-            }
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "\""
-        }
-      ]
+        ]
+      }
     },
     "escape_sequence": {
       "type": "IMMEDIATE_TOKEN",

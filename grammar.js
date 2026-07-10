@@ -368,7 +368,12 @@ module.exports = grammar({
 
     table: $ => seq('{', sepTrailing(',', $.table_field), '}'),
 
-    table_field: $ => seq(field('name', $.identifier), '=', field('value', $._expression)),
+    table_field: $ => choice(
+      seq(field('name', $.identifier), '=', field('value', $._expression)),
+      // Render-layer directive keys (ADR-0061): `@ref`/`@raw`/`@when`/`@match`/`@each`/`@strip`/
+      // `@msg`/`@fmt`/`@as`/`@do`/`@then`/`@default` = value, inside a config table.
+      seq('@', field('directive', $.identifier), '=', field('value', $._expression)),
+    ),
 
     // ---- types ----
     _type: $ => choice(
@@ -392,7 +397,7 @@ module.exports = grammar({
     // types of unboxed numeric buffers — `{ f32 }`, `{ vec2 }` (ADR-0046). They're valid type names in any
     // type position; listing them here (keyword extraction keeps `vec2(…)` a normal call in expression
     // position) is also what lets the brace/bracket array forms parse, since a `type_identifier` is uppercase.
-    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'money', 'big', 'f32', 'i32', 'u8', 'u16', 'u32', 'vec2', 'vec3', 'vec4', 'color', 'datetime', 'instant', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
+    primitive_type: _ => choice('number', 'int', 'float', 'decimal', 'money', 'big', 'f32', 'f64', 'i32', 'u8', 'u16', 'u32', 'vec2', 'vec3', 'vec4', 'quat', 'mat2', 'mat3', 'mat4', 'rect', 'aabox', 'sphere', 'capsule', 'ray', 'plane', 'color', 'datetime', 'instant', 'string', 'bytes', 'key', 'bool', 'boolean', 'any', 'nil'),
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => choice(seq('{', $._type, '}'), seq('[', $._type, ']')), // both spellings (`[T]` / `{ T }`)
@@ -407,6 +412,7 @@ module.exports = grammar({
       $.integer,
       $.string,
       $.key_lit,
+      $.bytes_lit,
       $.color,
       $.interpolated_string,
       $.path,
@@ -430,13 +436,18 @@ module.exports = grammar({
     // An interned `key` literal `$"name"` (ADR-0037). The `"` is `token.immediate` so only `$"` (no space) opens one.
     key_lit: $ => seq('$', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
+    // A `b"..."` byte-string literal (ADR-0072). The `"` is `token.immediate` so only `b"` (no space) opens one; a bare `b` stays an identifier.
+    bytes_lit: $ => seq('b', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+
     interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, token.immediate('{{'), token.immediate('}}'), token.immediate(prec(1, /[^`\\{}]+/)))), token.immediate('`')),
 
     // `{expr}` or `{expr:spec}` — the format spec is the mini-language `[align][0][width][.prec][type]`.
     interpolation: $ => seq('{', $._expression, optional($.format_spec), '}'),
     format_spec: _ => token.immediate(seq(':', /[^}]*/)),
 
-    path: $ => seq('path', token.immediate('"'), repeat(token.immediate(/[^"]+/)), '"'),
+    // A single compound token so the bare word `path` is NOT reserved (it's a valid identifier,
+    // e.g. `let path = [...]`; the `path"…"` literal only exists when a quote immediately follows).
+    path: _ => token(seq('path', '"', /[^"]*/, '"')),
 
     escape_sequence: _ => token.immediate(/\\[nrt0"\\`]/),
 

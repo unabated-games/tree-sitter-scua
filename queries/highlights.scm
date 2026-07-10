@@ -28,7 +28,7 @@
 (boolean) @constant.builtin
 (nil) @constant.builtin
 (color) @constant.builtin ; `#rrggbb[aa]` sRGB color literal (ADR-0056)
-[(string) (path) (key_lit)] @string
+[(string) (path) (key_lit) (bytes_lit)] @string
 (interpolated_string) @string
 (escape_sequence) @string.escape
 (format_spec) @string.special
