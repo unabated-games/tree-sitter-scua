@@ -124,7 +124,7 @@ module.exports = grammar({
       // The name may be lower- or upper-case: SCUA doesn't reserve casing for functions, and host-API
       // declarations (`--!declare`) routinely use PascalCase native names (raylib's `LoadTexture`).
       field('name', choice($.identifier, $.type_identifier)),
-      $._params,
+      $._fn_params,
       optional(seq('->', field('return_type', $._return_type))),
       repeat($._statement),
       'end',
@@ -243,8 +243,9 @@ module.exports = grammar({
     // `Ok(0)`, `Ok(n)`, `Error([a, ..])` — a tag with one or more sub-*patterns* (research/18).
     tag_pattern: $ => seq(field('tag', $.type_identifier), '(', commaSep($._pattern), ')'),
 
-    // `Enum.Variant` / `Enum.Variant(pat)` in a match arm (ADR-0026).
-    enum_pattern: $ => seq(field('enum', $.type_identifier), '.', field('variant', $.type_identifier), optional(seq('(', commaSep($._pattern), ')'))),
+    // `Enum.Variant` / `Enum.Variant(pat)` in a match arm (ADR-0026), and `lib.Enum.Variant` — an enum
+    // a module declared, reached through its import alias (ADR-0087 / design/63 §3).
+    enum_pattern: $ => seq(optional(seq(field('module', $.identifier), '.')), field('enum', $.type_identifier), '.', field('variant', $.type_identifier), optional(seq('(', commaSep($._pattern), ')'))),
 
     // `[a, b]` / `[h, ..t]` / `[..i, last]` — fixed prefix/suffix with an optional rest (research/18).
     array_pattern: $ => seq('[', commaSep(choice($._pattern, $.rest_pattern)), optional(','), ']'),
@@ -270,6 +271,15 @@ module.exports = grammar({
     expression_statement: $ => prec(-1, $._expression),
 
     _params: $ => seq('(', commaSep(seq($.identifier, optional(seq(':', $._type)))), ')'),
+
+    // A `fn` parameter may carry `= default` (ADR-0092) — the record-field grammar. Handler and
+    // contract parameter lists (`_params`) deliberately do not: a handler's parameters are bound from
+    // a message payload, and a contract's parameter is the subject under test.
+    _fn_params: $ => seq('(', commaSep(seq(
+      $.identifier,
+      optional(seq(':', $._type)),
+      optional(seq('=', field('default', $._expression))),
+    )), ')'),
 
     // ---- expressions ----
     _expression: $ => choice(
@@ -325,7 +335,7 @@ module.exports = grammar({
     // trailing-expression constructs (this grammar is for highlighting — exact binding doesn't matter).
     range: $ => prec.left(3, seq(field('start', $._expression), ':', field('end', $._expression), optional(seq(':', field('step', $._expression))))),
 
-    function_expression: $ => seq('fn', $._params, optional(seq('->', $._return_type)), repeat($._statement), 'end'),
+    function_expression: $ => seq('fn', $._fn_params, optional(seq('->', $._return_type)), repeat($._statement), 'end'),
 
     call_expression: $ => prec(14, seq(field('function', $._expression), '(', commaSep($._expression), ')')),
 
@@ -370,6 +380,10 @@ module.exports = grammar({
 
     table_field: $ => choice(
       seq(field('name', $.identifier), '=', field('value', $._expression)),
+      // ADR-0084: a key is a NAME — bare when it is an identifier, quoted when it is not
+      // (`{ "x-api-key" = key }`). A quoted key that IS an identifier is a parse error, so one key
+      // has exactly one spelling; the grammar can't express that, but the compiler enforces it.
+      seq(field('name', $.string), '=', field('value', $._expression)),
       // Render-layer directive keys (ADR-0061): `@ref`/`@raw`/`@when`/`@match`/`@each`/`@strip`/
       // `@msg`/`@fmt`/`@as`/`@do`/`@then`/`@default` = value, inside a config table.
       seq('@', field('directive', $.identifier), '=', field('value', $._expression)),
@@ -378,6 +392,7 @@ module.exports = grammar({
     // ---- types ----
     _type: $ => choice(
       $.type_identifier,
+      $.qualified_type,
       $.primitive_type,
       $.optional_type,
       $.union_type,
@@ -385,6 +400,10 @@ module.exports = grammar({
       $.table_type,
       $.function_type,
     ),
+
+    // `lib.Enum` — a type a module declared, named through its import alias (ADR-0087 / design/63 §3).
+    // Valid anywhere a type name is, including `type Local = lib.Enum`.
+    qualified_type: $ => seq(field('module', $.identifier), '.', field('name', $.type_identifier)),
 
     // `fn(T, U) -> R` — a first-class function type (M6). The return may be a `(T, U)` tuple (ADR-0035).
     function_type: $ => prec.right(seq('fn', '(', commaSep($._type), ')', optional(seq('->', $._return_type)))),
@@ -401,7 +420,9 @@ module.exports = grammar({
     optional_type: $ => prec(2, seq($._type, '?')),
     union_type: $ => prec.left(1, seq($._type, '|', $._type)),
     array_type: $ => choice(seq('{', $._type, '}'), seq('[', $._type, ']')), // both spellings (`[T]` / `{ T }`)
-    table_type: $ => seq('{', sepTrailing(',', seq($.identifier, ':', $._type)), '}'),
+    // ADR-0084: the open marker `[K]: V` (already present on `record_field`) makes an anon table type
+    // the map annotation — the only way to annotate a table holding non-identifier keys.
+    table_type: $ => seq('{', sepTrailing(',', choice(seq($.identifier, ':', $._type), seq('[', $._type, ']', ':', $._type))), '}'),
 
     // ---- literals ----
     _literal: $ => choice(
