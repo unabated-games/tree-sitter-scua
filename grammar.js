@@ -20,13 +20,19 @@ module.exports = grammar({
     [$.contract_clause, $._expression],
     [$.range],
     [$.select_arm], // a `wait_for(…)` after an arm body could start the next arm or be a statement in it
+    [$.match_statement, $.match_expression],
+    [$.match_arm, $.match_expression_arm],
   ],
 
   rules: {
     source_file: $ => repeat($._statement),
 
     // ---- statements ----
-    _statement: $ => choice(
+    _statement: $ => choice($._non_expression_statement, $.expression_statement),
+
+    // Every statement but a bare expression: a `match` arm takes an expression directly (see
+    // match_arm), so it must not also reach one through expression_statement.
+    _non_expression_statement: $ => choice(
       $.let_declaration,
       $.function_declaration,
       $.record_declaration,
@@ -54,7 +60,6 @@ module.exports = grammar({
       $.break_statement,
       $.tell_statement,
       $.assignment,
-      $.expression_statement,
     ),
 
     // `select  wait_for(Tag) -> … / wait(d) -> … / default -> …  end` (design/12) — a filtered receive.
@@ -223,9 +228,16 @@ module.exports = grammar({
       'end',
     ),
 
-    match_statement: $ => seq('match', field('subject', $._expression), repeat($.match_arm), 'end'),
+    // At statement level `match` is a statement, as in parser.zig: an arm body is one statement, and
+    // `return`, `let` or an assignment is as good as an expression. The same text is also a valid
+    // `match_expression` until an arm says otherwise, so the two are a declared GLR conflict and the
+    // statement reading wins when both survive (dynamic precedence). A bare expression body is a direct
+    // child here, as in `match_expression_arm`, so the two arm kinds stay ambiguous (and GLR keeps both)
+    // right up to an arm only a statement can hold. Before, a first arm like `Ok(c) -> echo(c)` settled
+    // on the expression reading, and a later `Error(e) -> return e` then failed to parse.
+    match_statement: $ => prec.dynamic(1, seq('match', field('subject', $._expression), repeat($.match_arm), 'end')),
 
-    match_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', $._statement),
+    match_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', choice(field('body', $._expression), $._non_expression_statement)),
 
     _pattern: $ => choice(
       $.or_pattern,
@@ -264,19 +276,22 @@ module.exports = grammar({
 
     assignment: $ => seq(commaSep1(field('target', $._lvalue)), '=', commaSep1(field('value', $._expression))),
 
-    _lvalue: $ => choice($.identifier, $.field_expression, $.index_expression, $.path_access),
+    _lvalue: $ => choice($.identifier, $.type_identifier, $.field_expression, $.index_expression, $.path_access),
 
     // Newlines are insignificant in SCUA, so a statement-level expression greedily extends into a
     // binary/postfix continuation (`a` newline `- b` is `a - b`); prefer that over a new statement.
     expression_statement: $ => prec(-1, $._expression),
 
-    _params: $ => seq('(', commaSep(seq($.identifier, optional(seq(':', $._type)))), ')'),
+    // A parameter is any identifier to the compiler, capitalised or not (`fn build(lib, Maker)`).
+    _param_name: $ => choice($.identifier, $.type_identifier),
+
+    _params: $ => seq('(', commaSep(seq($._param_name, optional(seq(':', $._type)))), ')'),
 
     // A `fn` parameter may carry `= default` (ADR-0092) — the record-field grammar. Handler and
     // contract parameter lists (`_params`) deliberately do not: a handler's parameters are bound from
     // a message payload, and a contract's parameter is the subject under test.
     _fn_params: $ => seq('(', commaSep(seq(
-      $.identifier,
+      $._param_name,
       optional(seq(':', $._type)),
       optional(seq('=', field('default', $._expression))),
     )), ')'),
@@ -290,6 +305,8 @@ module.exports = grammar({
       $.table,
       $.function_expression,
       $.call_expression,
+      alias($.contextual_call, $.call_expression),
+      alias($._contextual_name, $.identifier),
       $.field_expression,
       $.index_expression,
       $.slice_expression,
@@ -315,7 +332,7 @@ module.exports = grammar({
     )),
 
     // `match subj  pat [when g] -> expr  … end` as a value. Each arm body is an expression.
-    match_expression: $ => prec(1, seq('match', field('subject', $._expression), repeat($.match_expression_arm), 'end')),
+    match_expression: $ => seq('match', field('subject', $._expression), repeat($.match_expression_arm), 'end'),
 
     match_expression_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', field('body', $._expression)),
 
@@ -338,6 +355,17 @@ module.exports = grammar({
     function_expression: $ => seq('fn', $._fn_params, optional(seq('->', $._return_type)), repeat($._statement), 'end'),
 
     call_expression: $ => prec(14, seq(field('function', $._expression), '(', commaSep($._expression), ')')),
+
+    // `tell`, `ask` and `handle` are contextual keywords. Directly before `(` the compiler reads them as
+    // ordinary names: the `tell(...)`/`ask(...)` builtins, or a user function such as `fn handle(req)`.
+    // Tree-sitter lexes the word as the keyword, so give that spelling its own call rule.
+    contextual_call: $ => prec(15, seq(
+      field('function', alias(choice('tell', 'ask', 'handle'), $.identifier)),
+      token.immediate('('), commaSep($._expression), ')',
+    )),
+
+    // The same words used as a plain value, such as passing a handler: `http.serve(handle, opts)`.
+    _contextual_name: _ => prec(-1, choice('tell', 'ask', 'handle')),
 
     field_expression: $ => prec(14, seq(field('object', $._expression), '.', field('field', choice($.identifier, $.type_identifier)))),
 
@@ -379,7 +407,7 @@ module.exports = grammar({
     table: $ => seq('{', sepTrailing(',', $.table_field), '}'),
 
     table_field: $ => choice(
-      seq(field('name', $.identifier), '=', field('value', $._expression)),
+      seq(field('name', choice($.identifier, $.type_identifier)), '=', field('value', $._expression)),
       // ADR-0084: a key is a NAME — bare when it is an identifier, quoted when it is not
       // (`{ "x-api-key" = key }`). A quoted key that IS an identifier is a parse error, so one key
       // has exactly one spelling; the grammar can't express that, but the compiler enforces it.
@@ -443,7 +471,8 @@ module.exports = grammar({
 
     integer: _ => token(choice(/0x[0-9a-fA-F_]+/, /[0-9][0-9_]*/)),
     color: _ => token(/#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})/), // `#rrggbb[aa]` / `#rgb[a]` sRGB color literal (ADR-0056)
-    float: _ => token(/[0-9][0-9_]*\.[0-9_]+([eE][-+]?[0-9]+)?/),
+    // lexer.zig's `lexNumber`: a fraction, an exponent, or both (`1.5`, `5e-324`, `2.5E3`).
+    float: _ => token(/[0-9][0-9_]*(\.[0-9_]+([eE][-+]?[0-9][0-9_]*)?|[eE][-+]?[0-9][0-9_]*)/),
     decimal: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?d/), // exact fixed-point literal `12.34d` (ADR-0033)
     money: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?[ \t]+[A-Z]{3}/), // exact money literal `19.99 USD` — amount + ISO 4217 code (ADR-0068)
     duration: _ => token(/[0-9][0-9_]*(\.[0-9_]+)?(ms|min|s|h)/),
@@ -457,20 +486,34 @@ module.exports = grammar({
     // An interned `key` literal `$"name"` (ADR-0037). The `"` is `token.immediate` so only `$"` (no space) opens one.
     key_lit: $ => seq('$', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
-    // A `b"..."` byte-string literal (ADR-0072). The `"` is `token.immediate` so only `b"` (no space) opens one; a bare `b` stays an identifier.
-    bytes_lit: $ => seq('b', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    // A `b"..."` byte-string literal (ADR-0072). `b"` is a single token: as `seq('b', …)` the word `b`
+    // became a keyword, and every variable named `b` failed to parse (`fn(a, b)`, `Ok(b)`).
+    bytes_lit: $ => seq(token(prec(1, 'b"')), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
-    interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, token.immediate('{{'), token.immediate('}}'), token.immediate(prec(1, /[^`\\{}]+/)))), token.immediate('`')),
+    // A backtick template, read the way lexer.zig's `templateEnd` reads it: an escape, a `{{` / `}}`
+    // brace escape (an escape_sequence, so it highlights like `\{`), a `{…}` hole, or literal text.
+    // Only `{` opens a hole; a lone `}` is literal text (`` `\{"a": 1}` ``), which is why `}` is a
+    // text alternative of its own rather than excluded.
+    interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, alias(token.immediate(prec(2, '{{')), $.escape_sequence), alias(token.immediate(prec(2, '}}')), $.escape_sequence), token.immediate(prec(1, /[^`\\{}]+|\}/)))), token.immediate('`')),
 
     // `{expr}` or `{expr:spec}` — the format spec is the mini-language `[align][0][width][.prec][type]`.
+    // A hole's body is ordinary code, so a string, a nested template, a table literal's braces and a
+    // `--[[ … ]]` comment inside it are parsed as themselves and their `}` never closes the hole.
+    // The spec is everything from the first top-level `:` to the closing `}`, space before it or not
+    // (`{x :>8}` is a spec to the compiler too).
     interpolation: $ => seq('{', $._expression, optional($.format_spec), '}'),
-    format_spec: _ => token.immediate(seq(':', /[^}]*/)),
+    format_spec: _ => token(seq(':', /[^}]*/)),
 
-    // A single compound token so the bare word `path` is NOT reserved (it's a valid identifier,
-    // e.g. `let path = [...]`; the `path"…"` literal only exists when a quote immediately follows).
-    path: _ => token(seq('path', '"', /[^"]*/, '"')),
+    // `path"a/b"`. The opener `path"` is one token, as `b"` is for bytes_lit, so the bare word `path`
+    // is NOT reserved (it's a valid identifier, e.g. `let path = [...]`). parser.zig reads the ident
+    // `path` followed by a string token, so a space between them is allowed too. The string takes the
+    // same escapes as any other, so `\"` does not end it.
+    path: $ => seq(token(prec(1, /path[ \t]*"/)), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
 
-    escape_sequence: _ => token.immediate(/\\[nrt0"\\`]/),
+    // lexer.zig's `decodeEscapes`: `\n \t \r \e \0`, the escaped delimiters and backslash
+    // (`\" \' \` \{ \} \\`), a backslash before a real newline, and `\u{HEX}` (1–6 hex digits).
+    // Anything else after a backslash is a compile error, so it is left to parse as one.
+    escape_sequence: _ => token.immediate(/\\([nrte0"'\\`{}\n]|u\{[0-9a-fA-F]{1,6}\})/),
 
     identifier: _ => /[a-z_][A-Za-z0-9_]*/,
     type_identifier: _ => /[A-Z][A-Za-z0-9_]*/,

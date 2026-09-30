@@ -1,0 +1,25 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "scua",
+      "camelcase": "Scua",
+      "title": "SCUA",
+      "scope": "source.scua",
+      "path": ".",
+      "file-types": ["scua"],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^scua$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "SCUA grammar for tree-sitter",
+    "authors": [{ "name": "Unabated Games", "url": "https://www.unabated-games.com" }],
+    "links": {
+      "repository": "https://github.com/unabated-games/tree-sitter-scua",
+      "homepage": "https://scua.dev"
+    }
+  }
+}

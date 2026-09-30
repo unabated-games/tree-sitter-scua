@@ -1,0 +1,228 @@
+==================
+every escape the lexer knows
+==================
+
+let s = "q\" a\' t\` o\{ c\} b\\ e\e n\n r\r t\t z\0 u\u{1F600} nl\
+end"
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (string
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+backtick escapes cannot end the template
+==================
+
+let s = `tick\` quote\" apos\' caf\u{e9} \{not a hole\}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+doubled braces are literal braces
+==================
+
+let s = `{{literal}} {{{n}}}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (interpolation
+        (identifier))
+      (escape_sequence))))
+
+==================
+a lone closing brace is literal text
+==================
+
+let s = `\{"a": 1}`
+let t = `{n}}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (escape_sequence)))
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (identifier)))))
+
+==================
+a table literal inside a hole
+==================
+
+let s = `{len([1, 2])} {f({ k = 9 }).k}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (call_expression
+          (identifier)
+          (array
+            (integer)
+            (integer))))
+      (interpolation
+        (field_expression
+          (call_expression
+            (identifier)
+            (table
+              (table_field
+                (identifier)
+                (integer))))
+          (identifier))))))
+
+==================
+strings with braces and quotes inside a hole
+==================
+
+let s = `{f("{")} {f("}")} {f("\"")}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (call_expression
+          (identifier)
+          (string)))
+      (interpolation
+        (call_expression
+          (identifier)
+          (string)))
+      (interpolation
+        (call_expression
+          (identifier)
+          (string
+            (escape_sequence)))))))
+
+==================
+a nested template inside a hole
+==================
+
+let s = `{`inner {t.a}`} {`a:b`}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (interpolated_string
+          (interpolation
+            (field_expression
+              (identifier)
+              (identifier)))))
+      (interpolation
+        (interpolated_string)))))
+
+==================
+a block comment inside a hole
+==================
+
+let s = `{t.a --[[ a } in a comment ]] }`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (field_expression
+          (identifier)
+          (identifier))
+        (block_comment)))))
+
+==================
+format specs
+==================
+
+let s = `[{x:.2f}] [{x :>8.1f}] [{xs[1:3]}]`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (identifier)
+        (format_spec))
+      (interpolation
+        (identifier)
+        (format_spec))
+      (interpolation
+        (slice_expression
+          (identifier)
+          (integer)
+          (integer))))))
+
+==================
+path literals
+==================
+
+let p = path"a/b"
+let q = path "a/b"
+let r = path"say \"hi\""
+let path = 1
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (path))
+  (let_declaration
+    (identifier)
+    (path))
+  (let_declaration
+    (identifier)
+    (path
+      (escape_sequence)
+      (escape_sequence)))
+  (let_declaration
+    (identifier)
+    (integer)))

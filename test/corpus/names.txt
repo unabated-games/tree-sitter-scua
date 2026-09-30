@@ -1,0 +1,92 @@
+==================
+uppercase table keys
+==================
+
+exec.run_any(["env"], { env = { LANG = "C", PATH = p } })
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (field_expression
+        (identifier)
+        (identifier))
+      (array
+        (string))
+      (table
+        (table_field
+          (identifier)
+          (table
+            (table_field
+              (type_identifier)
+              (string))
+            (table_field
+              (type_identifier)
+              (identifier))))))))
+
+==================
+assignment to an uppercase name
+==================
+
+const MAX_HP = 100
+MAX_HP = 120
+
+---
+
+(source_file
+  (let_declaration
+    (type_identifier)
+    (integer))
+  (assignment
+    (type_identifier)
+    (integer)))
+
+==================
+parallel assignment
+==================
+
+a, b = b, a
+
+---
+
+(source_file
+  (assignment
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)))
+
+==================
+constructor call
+==================
+
+let p = Point(1, 2)
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (call_expression
+      (type_identifier)
+      (integer)
+      (integer))))
+
+==================
+capitalised parameter names
+==================
+
+fn build(lib, Maker) return Maker(lib) end
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (identifier)
+    (type_identifier)
+    (return_statement
+      (call_expression
+        (type_identifier)
+        (identifier)))))

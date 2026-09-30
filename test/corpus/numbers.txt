@@ -1,0 +1,26 @@
+==================
+floats with an exponent
+==================
+
+let a = 5e-324
+let b = 2.5E3
+let c = 1_000.25
+let d = 1..2
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (float))
+  (let_declaration
+    (identifier)
+    (float))
+  (let_declaration
+    (identifier)
+    (float))
+  (let_declaration
+    (identifier)
+    (binary_expression
+      (integer)
+      (integer))))

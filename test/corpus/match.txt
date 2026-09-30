@@ -1,0 +1,247 @@
+==================
+statement match with call arms
+==================
+
+match f(x)
+  Ok(c) -> echo(c)
+  Error(e) -> print(e)
+end
+
+---
+
+(source_file
+  (match_statement
+    (call_expression
+      (identifier)
+      (identifier))
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (call_expression
+        (identifier)
+        (identifier)))
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (call_expression
+        (identifier)
+        (identifier)))))
+
+==================
+a call arm, then a return arm
+==================
+
+fn accept_loop(l)
+  match net.accept(l)
+    Ok(conn) -> echo(conn)
+    Error(why) -> return print(`accept failed: {why}`)
+  end
+end
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (identifier)
+    (match_statement
+      (call_expression
+        (field_expression
+          (identifier)
+          (identifier))
+        (identifier))
+      (match_arm
+        (tag_pattern
+          (type_identifier)
+          (identifier))
+        (call_expression
+          (identifier)
+          (identifier)))
+      (match_arm
+        (tag_pattern
+          (type_identifier)
+          (identifier))
+        (return_statement
+          (call_expression
+            (identifier)
+            (interpolated_string
+              (interpolation
+                (identifier)))))))))
+
+==================
+a return arm, then a call arm
+==================
+
+match f(x)
+  Error(e) -> return e
+  Ok(c) -> echo(c)
+end
+
+---
+
+(source_file
+  (match_statement
+    (call_expression
+      (identifier)
+      (identifier))
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (return_statement
+        (identifier)))
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (call_expression
+        (identifier)
+        (identifier)))))
+
+==================
+assignment, do-block and wildcard arms with guards
+==================
+
+match n
+  0 -> out = 10
+  x when x > 5 -> do
+    echo("big")
+    out = x
+  end
+  _ -> echo("other")
+end
+
+---
+
+(source_file
+  (match_statement
+    (identifier)
+    (match_arm
+      (integer)
+      (assignment
+        (identifier)
+        (integer)))
+    (match_arm
+      (identifier)
+      (binary_expression
+        (identifier)
+        (integer))
+      (do_block
+        (expression_statement
+          (call_expression
+            (identifier)
+            (string)))
+        (assignment
+          (identifier)
+          (identifier))))
+    (match_arm
+      (identifier)
+      (call_expression
+        (identifier)
+        (string)))))
+
+==================
+a nested match as an arm body
+==================
+
+match r
+  Ok(v) -> match v
+    1 -> echo("one")
+    _ -> return "nested"
+  end
+  Error(e) -> echo(e)
+end
+
+---
+
+(source_file
+  (match_statement
+    (identifier)
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (match_statement
+        (identifier)
+        (match_arm
+          (integer)
+          (call_expression
+            (identifier)
+            (string)))
+        (match_arm
+          (identifier)
+          (return_statement
+            (string)))))
+    (match_arm
+      (tag_pattern
+        (type_identifier)
+        (identifier))
+      (call_expression
+        (identifier)
+        (identifier)))))
+
+==================
+match expressions as values
+==================
+
+let label = match n
+  1 -> "one"
+  k when k > 2 -> `big {k}`
+  _ -> "other"
+end
+print(match 1  1 -> "inline"  _ -> "no" end)
+fn e(x) return match x  1 -> "a"  _ -> match x  2 -> "b"  _ -> "c" end end end
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (match_expression
+      (identifier)
+      (match_expression_arm
+        (integer)
+        (string))
+      (match_expression_arm
+        (identifier)
+        (binary_expression
+          (identifier)
+          (integer))
+        (interpolated_string
+          (interpolation
+            (identifier))))
+      (match_expression_arm
+        (identifier)
+        (string))))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (match_expression
+        (integer)
+        (match_expression_arm
+          (integer)
+          (string))
+        (match_expression_arm
+          (identifier)
+          (string)))))
+  (function_declaration
+    (identifier)
+    (identifier)
+    (return_statement
+      (match_expression
+        (identifier)
+        (match_expression_arm
+          (integer)
+          (string))
+        (match_expression_arm
+          (identifier)
+          (match_expression
+            (identifier)
+            (match_expression_arm
+              (integer)
+              (string))
+            (match_expression_arm
+              (identifier)
+              (string))))))))

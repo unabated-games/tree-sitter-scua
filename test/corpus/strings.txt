@@ -1,0 +1,89 @@
+==================
+escapes
+==================
+
+let s = "tab\t nl\n esc\e nul\0 quote\" slash\\"
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (string
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+unicode escape
+==================
+
+let s = "caf\u{e9} \u{1F600}"
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (string
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+interpolated string with escaped braces
+==================
+
+let s = `{name} \{literal\}`
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (identifier))
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+byte literal
+==================
+
+let raw = b"GET /\r\n"
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (bytes_lit
+      (escape_sequence)
+      (escape_sequence))))
+
+==================
+a variable named b
+==================
+
+fn swap(a, b) return b, a end
+print(a == b)
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (identifier)
+    (identifier)
+    (return_statement
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (binary_expression
+        (identifier)
+        (identifier)))))

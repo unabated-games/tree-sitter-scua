@@ -1,9 +1,15 @@
 {
   "name": "tree-sitter-scua",
   "version": "0.1.0",
-  "description": "tree-sitter grammar for the SCUA scripting language",
-  "main": "bindings/node",
-  "dependencies": { "node-addon-api": "^7.0.0", "node-gyp-build": "^4.6.0" },
-  "devDependencies": { "tree-sitter-cli": "^0.22.0" },
-  "tree-sitter": [{ "scope": "source.scua", "file-types": ["scua"] }]
+  "description": "SCUA grammar for tree-sitter",
+  "license": "MIT",
+  "repository": "github:unabated-games/tree-sitter-scua",
+  "homepage": "https://scua.dev",
+  "keywords": ["tree-sitter", "parser", "scua"],
+  "files": ["grammar.js", "tree-sitter.json", "queries/*", "src/**"],
+  "scripts": {
+    "generate": "tree-sitter generate --abi 14",
+    "test": "tree-sitter test"
+  },
+  "devDependencies": { "tree-sitter-cli": "0.26.8" }
 }

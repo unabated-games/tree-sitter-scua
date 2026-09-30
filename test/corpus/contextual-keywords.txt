@@ -1,0 +1,168 @@
+==================
+tell as a send
+==================
+
+tell worker.Ping(1)
+
+---
+
+(source_file
+  (tell_statement
+    (call_expression
+      (field_expression
+        (identifier)
+        (type_identifier))
+      (integer))))
+
+==================
+tell as a builtin call
+==================
+
+tell(a, "hello")
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (identifier)
+      (string))))
+
+==================
+ask as a send
+==================
+
+let v = ask worker.Get(1)
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (ask_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (type_identifier))
+        (integer)))))
+
+==================
+ask as a send with a timeout
+==================
+
+let v = ask worker.Get(1) timeout 5
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (ask_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (type_identifier))
+        (integer))
+      (integer))))
+
+==================
+ask as a builtin call
+==================
+
+let r = ask(sock, query, 3)
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (call_expression
+      (identifier)
+      (identifier)
+      (identifier)
+      (integer))))
+
+==================
+ask as a variable
+==================
+
+let ask = 5
+print(ask)
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (integer))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (identifier))))
+
+==================
+handle as a declaration
+==================
+
+handle Socket
+
+---
+
+(source_file
+  (handle_declaration
+    (type_identifier)))
+
+==================
+handle as a function name
+==================
+
+fn handle(req) return req end
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (identifier)
+    (return_statement
+      (identifier))))
+
+==================
+handle as a call
+==================
+
+handle(dg.peer, dg.data)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (field_expression
+        (identifier)
+        (identifier))
+      (field_expression
+        (identifier)
+        (identifier)))))
+
+==================
+handle passed as a value
+==================
+
+http.serve(handle, { bind = "127.0.0.1:8080" })
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (field_expression
+        (identifier)
+        (identifier))
+      (identifier)
+      (table
+        (table_field
+          (identifier)
+          (string))))))
