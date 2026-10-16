@@ -1246,6 +1246,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -1255,6 +1259,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -1595,6 +1603,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -1604,6 +1616,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -2674,6 +2690,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -2683,6 +2703,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -3004,6 +3028,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -3013,6 +3041,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -3302,6 +3334,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -3311,6 +3347,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -3605,6 +3645,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -3614,6 +3658,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -4316,6 +4364,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -4325,6 +4377,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -5298,6 +5354,164 @@
     }
   },
   {
+    "type": "live_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "array",
+            "named": true
+          },
+          {
+            "type": "ask_expression",
+            "named": true
+          },
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "boolean",
+            "named": true
+          },
+          {
+            "type": "bytes_lit",
+            "named": true
+          },
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "color",
+            "named": true
+          },
+          {
+            "type": "decimal",
+            "named": true
+          },
+          {
+            "type": "duration",
+            "named": true
+          },
+          {
+            "type": "field_expression",
+            "named": true
+          },
+          {
+            "type": "float",
+            "named": true
+          },
+          {
+            "type": "function_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "if_expression",
+            "named": true
+          },
+          {
+            "type": "import_expression",
+            "named": true
+          },
+          {
+            "type": "index_expression",
+            "named": true
+          },
+          {
+            "type": "integer",
+            "named": true
+          },
+          {
+            "type": "interpolated_string",
+            "named": true
+          },
+          {
+            "type": "key_lit",
+            "named": true
+          },
+          {
+            "type": "match_expression",
+            "named": true
+          },
+          {
+            "type": "money",
+            "named": true
+          },
+          {
+            "type": "nil",
+            "named": true
+          },
+          {
+            "type": "parenthesized",
+            "named": true
+          },
+          {
+            "type": "path",
+            "named": true
+          },
+          {
+            "type": "path_access",
+            "named": true
+          },
+          {
+            "type": "range",
+            "named": true
+          },
+          {
+            "type": "recv_wait",
+            "named": true
+          },
+          {
+            "type": "slice_expression",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "table",
+            "named": true
+          },
+          {
+            "type": "try_expression",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "log_statement",
     "named": true,
     "fields": {
@@ -5895,6 +6109,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -5904,6 +6122,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -6719,6 +6941,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -6728,6 +6954,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -6791,6 +7021,198 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "module_state_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "array_type",
+            "named": true
+          },
+          {
+            "type": "function_type",
+            "named": true
+          },
+          {
+            "type": "optional_type",
+            "named": true
+          },
+          {
+            "type": "primitive_type",
+            "named": true
+          },
+          {
+            "type": "qualified_type",
+            "named": true
+          },
+          {
+            "type": "table_type",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          },
+          {
+            "type": "union_type",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "array",
+            "named": true
+          },
+          {
+            "type": "ask_expression",
+            "named": true
+          },
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "boolean",
+            "named": true
+          },
+          {
+            "type": "bytes_lit",
+            "named": true
+          },
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "color",
+            "named": true
+          },
+          {
+            "type": "decimal",
+            "named": true
+          },
+          {
+            "type": "duration",
+            "named": true
+          },
+          {
+            "type": "field_expression",
+            "named": true
+          },
+          {
+            "type": "float",
+            "named": true
+          },
+          {
+            "type": "function_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "if_expression",
+            "named": true
+          },
+          {
+            "type": "import_expression",
+            "named": true
+          },
+          {
+            "type": "index_expression",
+            "named": true
+          },
+          {
+            "type": "integer",
+            "named": true
+          },
+          {
+            "type": "interpolated_string",
+            "named": true
+          },
+          {
+            "type": "key_lit",
+            "named": true
+          },
+          {
+            "type": "match_expression",
+            "named": true
+          },
+          {
+            "type": "money",
+            "named": true
+          },
+          {
+            "type": "nil",
+            "named": true
+          },
+          {
+            "type": "parenthesized",
+            "named": true
+          },
+          {
+            "type": "path",
+            "named": true
+          },
+          {
+            "type": "path_access",
+            "named": true
+          },
+          {
+            "type": "range",
+            "named": true
+          },
+          {
+            "type": "recv_wait",
+            "named": true
+          },
+          {
+            "type": "slice_expression",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "table",
+            "named": true
+          },
+          {
+            "type": "try_expression",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -7081,6 +7503,64 @@
         "types": [
           {
             "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "parameters": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "(",
+            "named": false
+          },
+          {
+            "type": ")",
+            "named": false
+          },
+          {
+            "type": ",",
+            "named": false
+          },
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "array_type",
+            "named": true
+          },
+          {
+            "type": "function_type",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "optional_type",
+            "named": true
+          },
+          {
+            "type": "primitive_type",
+            "named": true
+          },
+          {
+            "type": "qualified_type",
+            "named": true
+          },
+          {
+            "type": "table_type",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          },
+          {
+            "type": "union_type",
             "named": true
           }
         ]
@@ -8523,6 +9003,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -8532,6 +9016,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -8944,6 +9432,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -8953,6 +9445,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -9143,6 +9639,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -9156,6 +9656,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -10282,6 +10786,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -10291,6 +10799,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -10827,6 +11339,10 @@
           "named": true
         },
         {
+          "type": "live_declaration",
+          "named": true
+        },
+        {
           "type": "log_statement",
           "named": true
         },
@@ -10836,6 +11352,10 @@
         },
         {
           "type": "migrate_declaration",
+          "named": true
+        },
+        {
+          "type": "module_state_declaration",
           "named": true
         },
         {
@@ -11226,6 +11746,10 @@
     "type": "line_comment",
     "named": true,
     "extra": true
+  },
+  {
+    "type": "live",
+    "named": false
   },
   {
     "type": "mat2",

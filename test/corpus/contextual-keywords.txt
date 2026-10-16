@@ -166,3 +166,70 @@ http.serve(handle, { bind = "127.0.0.1:8080" })
         (table_field
           (identifier)
           (string))))))
+
+==================
+module state and constructor arguments
+==================
+
+state active = {}
+state n: int = 0
+partition Shop(catalog, log)
+  state items = catalog
+  on Start() end
+end
+
+---
+
+(source_file
+  (module_state_declaration
+    name: (identifier)
+    value: (table))
+  (module_state_declaration
+    name: (identifier)
+    type: (primitive_type)
+    value: (integer))
+  (partition_declaration
+    name: (type_identifier)
+    parameters: (identifier)
+    parameters: (identifier)
+    (state_field
+      name: (identifier)
+      value: (identifier))
+    (handler
+      tag: (type_identifier))))
+
+==================
+live as a declaration
+==================
+
+live TUNING = { speed = 1.0 }
+
+---
+
+(source_file
+  (live_declaration
+    (type_identifier)
+    (table
+      (table_field
+        (identifier)
+        (float)))))
+
+==================
+live as a name: a publish
+==================
+
+live.publish(TUNING, { speed = 2.0 })
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (field_expression
+        (identifier)
+        (identifier))
+      (type_identifier)
+      (table
+        (table_field
+          (identifier)
+          (float))))))

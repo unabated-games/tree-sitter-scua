@@ -90,3 +90,34 @@ fn build(lib, Maker) return Maker(lib) end
       (call_expression
         (type_identifier)
         (identifier)))))
+
+==================
+reserved words as member names and table keys, and std.<name>
+==================
+
+let t = { end = 10, in = 2 }
+print(t.end, std.len(t))
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (table
+      (table_field
+        (identifier)
+        (integer))
+      (table_field
+        (identifier)
+        (integer))))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (field_expression
+        (identifier)
+        (identifier))
+      (call_expression
+        (field_expression
+          (identifier)
+          (identifier))
+        (identifier)))))

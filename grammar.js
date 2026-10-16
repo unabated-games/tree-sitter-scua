@@ -44,6 +44,8 @@ module.exports = grammar({
       $.handle_declaration,
       $.gate_declaration,
       $.partition_declaration,
+      $.module_state_declaration,
+      $.live_declaration,
       $.migrate_declaration,
       $.import_declaration,
       $.return_statement,
@@ -178,11 +180,20 @@ module.exports = grammar({
     partition_declaration: $ => seq(
       'partition',
       field('name', $.type_identifier),
+      optional(field('parameters', $._params)), // constructor arguments (design/101 §4.1)
       repeat(choice($.state_field, $.handler)),
       'end',
     ),
 
     state_field: $ => seq('state', field('name', $.identifier), '=', field('value', $._expression)),
+
+    // `state name [: T] = value` at a module's top level: one per partition, created on first use
+    // (design/101 §2.9). The compiler refuses it in the main script.
+    module_state_declaration: $ => seq('state', field('name', $.identifier), optional(seq(':', field('type', $._type))), '=', field('value', $._expression)),
+
+    // `live NAME = { … }` (design/101 §4.3): a value the main script or the host publishes while the
+    // program runs, read by key. `live` is contextual: `live.publish(…)` reads it as a name.
+    live_declaration: $ => seq('live', field('name', choice($.identifier, $.type_identifier)), '=', field('value', $._expression)),
 
     handler: $ => seq(
       field('kind', choice('on', 'ask')),
@@ -365,7 +376,8 @@ module.exports = grammar({
     )),
 
     // The same words used as a plain value, such as passing a handler: `http.serve(handle, opts)`.
-    _contextual_name: _ => prec(-1, choice('tell', 'ask', 'handle')),
+    // `live` too: `live.publish(TUNING, { … })` is a call on the name (design/101 §4.3).
+    _contextual_name: _ => prec(-1, choice('tell', 'ask', 'handle', 'live')),
 
     field_expression: $ => prec(14, seq(field('object', $._expression), '.', field('field', choice($.identifier, $.type_identifier)))),
 
