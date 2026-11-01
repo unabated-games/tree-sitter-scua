@@ -226,3 +226,21 @@ let path = 1
   (let_declaration
     (identifier)
     (integer)))
+
+==================
+double quotes in template text
+==================
+
+return Error(`sort takes field names, not "{k.v}"`)
+
+---
+
+(source_file
+  (return_statement
+    (call_expression
+      (type_identifier)
+      (interpolated_string
+        (interpolation
+          (field_expression
+            (identifier)
+            (identifier)))))))

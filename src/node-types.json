@@ -1194,6 +1194,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -1551,6 +1555,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -1770,6 +1778,10 @@
         "required": true,
         "types": [
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "type_identifier",
             "named": true
           }
@@ -1867,6 +1879,10 @@
         "multiple": false,
         "required": true,
         "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
           {
             "type": "type_identifier",
             "named": true
@@ -2467,6 +2483,10 @@
         "required": true,
         "types": [
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "type_identifier",
             "named": true
           }
@@ -2631,6 +2651,10 @@
         },
         {
           "type": "comptime_if",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
           "named": true
         },
         {
@@ -2968,6 +2992,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -3271,6 +3299,10 @@
         },
         {
           "type": "comptime_if",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
           "named": true
         },
         {
@@ -3582,6 +3614,10 @@
         },
         {
           "type": "comptime_if",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
           "named": true
         },
         {
@@ -4312,6 +4348,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -4433,6 +4473,10 @@
           {
             "type": "identifier",
             "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
           }
         ]
       },
@@ -4442,6 +4486,10 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "import_path",
             "named": true
           }
         ]
@@ -4590,6 +4638,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "import_path",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -6061,6 +6124,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -6882,6 +6949,10 @@
         },
         {
           "type": "comptime_if",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
           "named": true
         },
         {
@@ -8204,6 +8275,16 @@
           }
         ]
       },
+      "reason": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      },
       "refinement": {
         "multiple": true,
         "required": false,
@@ -8349,10 +8430,6 @@
       "types": [
         {
           "type": "record_field",
-          "named": true
-        },
-        {
-          "type": "string",
           "named": true
         }
       ]
@@ -8516,6 +8593,16 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "reason": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "string",
             "named": true
           }
         ]
@@ -8951,6 +9038,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -9380,6 +9471,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -9536,6 +9631,10 @@
         },
         {
           "type": "comptime_if",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
           "named": true
         },
         {
@@ -10734,6 +10833,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -11287,6 +11390,10 @@
           "named": true
         },
         {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
           "type": "contract_declaration",
           "named": true
         },
@@ -11597,6 +11704,10 @@
   {
     "type": "const",
     "named": false
+  },
+  {
+    "type": "continue_statement",
+    "named": true
   },
   {
     "type": "contract",

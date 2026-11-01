@@ -21,6 +21,8 @@ module.exports = grammar({
     [$.range],
     [$.select_arm], // a `wait_for(…)` after an arm body could start the next arm or be a statement in it
     [$.match_statement, $.match_expression],
+    [$.expression_statement, $.if_expression],
+
     [$.match_arm, $.match_expression_arm],
   ],
 
@@ -60,6 +62,7 @@ module.exports = grammar({
       $.spawn_block,
       $.log_statement,
       $.break_statement,
+      $.continue_statement,
       $.tell_statement,
       $.assignment,
     ),
@@ -79,8 +82,9 @@ module.exports = grammar({
     // `enum Name  A  B(int)  C = 27  end` (ADR-0026/0027): payload-free ⇒ int-backed; a variant may carry
     // a positional payload or an explicit discriminant.
     enum_declaration: $ => seq('enum', field('name', $.type_identifier), '{', sepTrailing(',', $.enum_variant), '}'),
+    // A variant is any name to the compiler, capitalised or not (`enum Code { not_found, … }`).
     enum_variant: $ => seq(
-      field('name', $.type_identifier),
+      field('name', choice($.type_identifier, $.identifier)),
       optional(choice(seq('(', commaSep($.enum_field), ')'), seq('=', field('value', $._expression)))),
     ),
     // A variant payload field: a bare type (`Patrol(int)`) or a named one (`Chase(target: int)` — names
@@ -89,7 +93,7 @@ module.exports = grammar({
 
     // `flags Name  A  B  C  end` (research/32): a typed bit-set; each variant is a bare name (bit `1<<i`).
     flags_declaration: $ => seq('flags', field('name', $.type_identifier), '{', sepTrailing(',', $.flags_variant), '}'),
-    flags_variant: $ => field('name', $.type_identifier),
+    flags_variant: $ => field('name', choice($.type_identifier, $.identifier)),
 
     // `contract Name(p)  <clause>*  end` (ADR-0028): labelled boolean clauses with optional `else "reason"`.
     contract_declaration: $ => seq('contract', field('name', $.type_identifier), $._params, repeat($.contract_clause), 'end'),
@@ -99,8 +103,10 @@ module.exports = grammar({
       optional(seq('else', field('reason', $.string))),
     )),
 
-    // `import name [as alias]` (M-Modules).
-    import_declaration: $ => seq('import', field('name', $.identifier), optional(seq('as', field('alias', $.identifier)))),
+    // `import name [as alias]`, or a path `import lib/vault [as v]` (parser.zig's importDecl: names
+    // joined by `/`; the alias defaults to the last one).
+    import_declaration: $ => seq('import', field('name', choice($.identifier, $.import_path)), optional(seq('as', field('alias', choice($.identifier, $.type_identifier))))),
+    import_path: $ => seq($.identifier, repeat1(seq('/', $.identifier))),
 
     // `comptime if <cond> then … [elseif…] [else…] end` (ADR-0030): compile-time conditional.
     comptime_if: $ => seq(
@@ -143,12 +149,18 @@ module.exports = grammar({
       '{',
       sepTrailing(',', $.record_field),
       '}',
-      repeat(seq('where', field('refinement', $._expression), optional(seq('else', $.string)))), // record-level `where` (ADR-0028)
+      repeat(seq('where', field('refinement', $._expression), optional(seq('else', field('reason', $.string))))), // record-level `where`
     ),
 
     record_field: $ => choice(
-      // `name: T [gated Gate] [where <pred>] [= default]` — modifier order matches the parser (ADR-0052/0028).
-      seq(field('name', $.identifier), ':', field('type', $._type), optional(seq('gated', field('gate', $.type_identifier))), optional(seq('where', field('refinement', $._expression))), optional(seq('=', field('default', $._expression)))),
+      // `name: T [gated Gate] [where <pred> [else "reason"]] [= default]` — modifier order matches
+      // parser.zig's recordDecl.
+      seq(
+        field('name', $.identifier), ':', field('type', $._type),
+        optional(seq('gated', field('gate', $.type_identifier))),
+        optional(seq('where', field('refinement', $._expression), optional(seq('else', field('reason', $.string))))),
+        optional(seq('=', field('default', $._expression))),
+      ),
       seq('[', $._type, ']', ':', $._type), // open indexer: [string]: any
     ),
 
@@ -217,12 +229,12 @@ module.exports = grammar({
 
     return_statement: $ => prec.right(seq('return', optional(commaSep1($._expression)))),
 
-    if_statement: $ => seq(
+    if_statement: $ => prec.dynamic(1, seq(
       'if', field('condition', $._expression), 'then', repeat($._statement),
       repeat(seq('elseif', field('condition', $._expression), 'then', repeat($._statement))),
       optional(seq('else', repeat($._statement))),
       'end',
-    ),
+    )),
 
     while_statement: $ => seq('while', field('condition', $._expression), 'do', repeat($._statement), 'end'),
 
@@ -268,7 +280,7 @@ module.exports = grammar({
 
     // `Enum.Variant` / `Enum.Variant(pat)` in a match arm (ADR-0026), and `lib.Enum.Variant` — an enum
     // a module declared, reached through its import alias (ADR-0087 / design/63 §3).
-    enum_pattern: $ => seq(optional(seq(field('module', $.identifier), '.')), field('enum', $.type_identifier), '.', field('variant', $.type_identifier), optional(seq('(', commaSep($._pattern), ')'))),
+    enum_pattern: $ => seq(optional(seq(field('module', $.identifier), '.')), field('enum', $.type_identifier), '.', field('variant', choice($.type_identifier, $.identifier)), optional(seq('(', commaSep($._pattern), ')'))),
 
     // `[a, b]` / `[h, ..t]` / `[..i, last]` — fixed prefix/suffix with an optional rest (research/18).
     array_pattern: $ => seq('[', commaSep(choice($._pattern, $.rest_pattern)), optional(','), ']'),
@@ -279,6 +291,7 @@ module.exports = grammar({
     field_pattern: $ => choice(seq(field('key', $.identifier), '=', $._pattern), field('shorthand', $.identifier)),
 
     break_statement: _ => 'break',
+    continue_statement: _ => 'continue',
 
     // `tell partition.Tag(args)` — fire-and-forget message send. The target is a normal call expression
     // (`partition.Tag(args)`); spelling it out as `expr . Tag ( … )` here would make `$._expression` eat
@@ -287,7 +300,7 @@ module.exports = grammar({
 
     assignment: $ => seq(commaSep1(field('target', $._lvalue)), '=', commaSep1(field('value', $._expression))),
 
-    _lvalue: $ => choice($.identifier, $.type_identifier, $.field_expression, $.index_expression, $.path_access),
+    _lvalue: $ => choice($.identifier, alias($._contextual_name, $.identifier), $.type_identifier, $.field_expression, $.index_expression, $.path_access),
 
     // Newlines are insignificant in SCUA, so a statement-level expression greedily extends into a
     // binary/postfix continuation (`a` newline `- b` is `a - b`); prefer that over a new statement.
@@ -336,7 +349,7 @@ module.exports = grammar({
 
     // `if c then a [elseif c then a]* else b end` as a value (a total conditional — `else` required).
     // Distinct from `if_statement` (whose branches are statement lists); shares the keyword only.
-    if_expression: $ => prec(1, seq(
+    if_expression: $ => prec(-1, seq(
       'if', field('condition', $._expression), 'then', field('consequence', $._expression),
       repeat(seq('elseif', field('condition', $._expression), 'then', field('consequence', $._expression))),
       'else', field('alternative', $._expression), 'end',
@@ -376,8 +389,19 @@ module.exports = grammar({
     )),
 
     // The same words used as a plain value, such as passing a handler: `http.serve(handle, opts)`.
-    // `live` too: `live.publish(TUNING, { … })` is a call on the name (design/101 §4.3).
-    _contextual_name: _ => prec(-1, choice('tell', 'ask', 'handle', 'live')),
+    // `live` too: `live.publish(TUNING, { … })` is a call on the name.
+    //
+    // Every word that opens a declaration or statement is contextual to the compiler: it is that
+    // keyword only before the token that makes it one (`type Name`, `record Name`, `state name =`,
+    // `info(`), and an ordinary name everywhere else. Tree-sitter returns the keyword wherever it
+    // could start a statement, which includes the start of every statement and the value after
+    // `return`. So `info.project = p`, `type(b)`, `record(state, s)` and `live = live + 1` need the
+    // word as a name here; the low precedence keeps the declaration reading whenever it can go on.
+    _contextual_name: _ => prec(-1, choice(
+      'tell', 'ask', 'handle', 'live',
+      'type', 'record', 'interface', 'enum', 'flags', 'contract', 'gate', 'migrate', 'partition', 'state',
+      'select', 'trace', 'debug', 'info', 'warn', 'severe',
+    )),
 
     field_expression: $ => prec(14, seq(field('object', $._expression), '.', field('field', choice($.identifier, $.type_identifier)))),
 

@@ -1,0 +1,184 @@
+==================
+record field refinements with a reason, a gate and a default
+==================
+
+record Task {
+  name: string where len(name) in 1:65 and str.is_identifier(name) else "a user name is short",
+  start: string? gated Shared where is_iso_date(start) else "start must be a date",
+  every_ms: int where every_ms >= 1000 else "poll at most once a second" = 5000,
+  n: int where n > 0,
+} where name != "" else "a name"
+
+---
+
+(source_file
+  (record_declaration
+    (type_identifier)
+    (record_field
+      (identifier)
+      (primitive_type)
+      (binary_expression
+        (range
+          (binary_expression
+            (call_expression
+              (identifier)
+              (identifier))
+            (integer))
+          (integer))
+        (call_expression
+          (field_expression
+            (identifier)
+            (identifier))
+          (identifier)))
+      (string))
+    (record_field
+      (identifier)
+      (optional_type
+        (primitive_type))
+      (type_identifier)
+      (call_expression
+        (identifier)
+        (identifier))
+      (string))
+    (record_field
+      (identifier)
+      (primitive_type)
+      (binary_expression
+        (identifier)
+        (integer))
+      (string)
+      (integer))
+    (record_field
+      (identifier)
+      (primitive_type)
+      (binary_expression
+        (identifier)
+        (integer)))
+    (binary_expression
+      (identifier)
+      (string))
+    (string)))
+
+==================
+path imports
+==================
+
+import lib/vault
+import lib/hub as h
+import js_value as V
+
+---
+
+(source_file
+  (import_declaration
+    (import_path
+      (identifier)
+      (identifier)))
+  (import_declaration
+    (import_path
+      (identifier)
+      (identifier))
+    (identifier))
+  (import_declaration
+    (identifier)
+    (type_identifier)))
+
+==================
+partitions with constructor parameters
+==================
+
+partition DocSession(key, text, version, restore)
+  state edits = 0
+  on Edit(e)
+    edits = edits + 1
+  end
+end
+partition Registry(paths)
+end
+partition PageCache()
+  ask Get(k: string)
+    return nil
+  end
+end
+
+---
+
+(source_file
+  (partition_declaration
+    (type_identifier)
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)
+    (state_field
+      (identifier)
+      (integer))
+    (handler
+      (type_identifier)
+      (identifier)
+      (assignment
+        (identifier)
+        (binary_expression
+          (identifier)
+          (integer)))))
+  (partition_declaration
+    (type_identifier)
+    (identifier))
+  (partition_declaration
+    (type_identifier)
+    (handler
+      (type_identifier)
+      (identifier)
+      (primitive_type)
+      (return_statement
+        (nil)))))
+
+==================
+lower-case enum and flags variants
+==================
+
+enum Code { not_found, bad_argument = 3, Fail(msg: string) }
+flags Perm { read, Write }
+match c
+  zip.Code.not_found -> x = 1
+  Code.bad_argument -> x = 2
+end
+
+---
+
+(source_file
+  (enum_declaration
+    (type_identifier)
+    (enum_variant
+      (identifier))
+    (enum_variant
+      (identifier)
+      (integer))
+    (enum_variant
+      (type_identifier)
+      (enum_field
+        (identifier)
+        (primitive_type))))
+  (flags_declaration
+    (type_identifier)
+    (flags_variant
+      (identifier))
+    (flags_variant
+      (type_identifier)))
+  (match_statement
+    (identifier)
+    (match_arm
+      (enum_pattern
+        (identifier)
+        (type_identifier)
+        (identifier))
+      (assignment
+        (identifier)
+        (integer)))
+    (match_arm
+      (enum_pattern
+        (type_identifier)
+        (identifier))
+      (assignment
+        (identifier)
+        (integer)))))

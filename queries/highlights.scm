@@ -13,6 +13,7 @@
   "comptime" "import" "as" "where" "gated"
 ] @keyword
 (break_statement) @keyword
+(continue_statement) @keyword
 
 ["and" "or" "not" "matches"] @keyword.operator
 
@@ -46,6 +47,8 @@
 (record_declaration name: (type_identifier) @type)
 (enum_declaration name: (type_identifier) @type)
 (enum_variant name: (type_identifier) @constructor)
+(enum_variant name: (identifier) @constructor) ; a lower-case variant (`enum Code { not_found }`)
+(flags_variant name: (identifier) @constructor)
 (enum_field name: (identifier) @property) ; named payload field (documentation; matched positionally)
 (let_declaration name: (type_identifier) @constant) ; an UPPER_CASE `const NAME` binding
 (contract_declaration name: (type_identifier) @type)
@@ -57,6 +60,8 @@
 (gate_audience enum: (type_identifier) @type variant: (type_identifier) @constructor)
 (import_declaration name: (identifier) @namespace)
 (import_declaration alias: (identifier) @namespace)
+(import_declaration alias: (type_identifier) @namespace)
+(import_path (identifier) @namespace) ; `import lib/vault`
 
 ; ---- fields & calls ----
 (record_field name: (identifier) @property)
@@ -65,6 +70,7 @@
 (field_expression field: (identifier) @property)
 (field_expression field: (type_identifier) @constructor) ; Enum.Variant access
 (enum_pattern enum: (type_identifier) @type variant: (type_identifier) @constructor)
+(enum_pattern variant: (identifier) @constructor)
 (enum_pattern module: (identifier) @namespace) ; `lib.Enum.Variant` — the import alias (ADR-0087)
 (qualified_type module: (identifier) @namespace name: (type_identifier) @type)
 (call_expression function: (identifier) @function.call)

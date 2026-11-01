@@ -121,3 +121,23 @@ print(t.end, std.len(t))
           (identifier)
           (identifier))
         (identifier)))))
+
+==================
+a bare b is a name, b" opens bytes
+==================
+
+let f = fn(b) return b end
+let s = b"ab"
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (function_expression
+      (identifier)
+      (return_statement
+        (identifier))))
+  (let_declaration
+    (identifier)
+    (bytes_lit)))

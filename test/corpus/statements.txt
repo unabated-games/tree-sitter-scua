@@ -1,0 +1,70 @@
+==================
+an if statement whose first branch is an expression
+==================
+
+if a then
+  out.push(x)
+elseif f then
+  let parts = []
+else
+  delivered = delivered + 1
+end
+
+---
+
+(source_file
+  (if_statement
+    (identifier)
+    (expression_statement
+      (call_expression
+        (field_expression
+          (identifier)
+          (identifier))
+        (identifier)))
+    (identifier)
+    (let_declaration
+      (identifier)
+      (array))
+    (assignment
+      (identifier)
+      (binary_expression
+        (identifier)
+        (integer)))))
+
+==================
+an if expression is still an expression
+==================
+
+let y = if c then a elseif d then e else b end
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (if_expression
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))))
+
+==================
+continue and break
+==================
+
+for x in xs do
+  if x then continue end
+  break
+end
+
+---
+
+(source_file
+  (for_statement
+    (identifier)
+    (identifier)
+    (if_statement
+      (identifier)
+      (continue_statement))
+    (break_statement)))
