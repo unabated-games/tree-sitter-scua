@@ -5,6 +5,14 @@
  * source of truth on semantics — the Zig compiler owns that. It aims to parse the real `examples/`
  * without errors; precedence mirrors the compiler's operator table (design/09).
  */
+// A value `match` arm or value `if` branch: one expression, or one `return [values]` / `break` /
+// `continue` that leaves instead of giving the value (`Error(e) -> return "failed"`), as in parser.zig's
+// `valueArm`. Written inline (not a hidden rule) so the arm keeps the same shape as a statement arm and the
+// declared `match_arm`/`match_expression_arm` conflict still covers both. The compiler ends a bare
+// `return` at the end of its line; this grammar has no newlines, so a bare `return` followed by another
+// arm on the next line reads that arm's pattern as its value.
+const valueArm = $ => choice($._expression, $.return_statement, $.break_statement, $.continue_statement);
+
 module.exports = grammar({
   name: 'scua',
 
@@ -24,6 +32,9 @@ module.exports = grammar({
     [$.expression_statement, $.if_expression],
 
     [$.match_arm, $.match_expression_arm],
+    // `-> return x` / `-> break` is a statement arm's body or a value arm's jump until a later arm
+    // decides; the statement reading wins when both survive, as above.
+    [$._non_expression_statement, $.match_expression_arm],
   ],
 
   rules: {
@@ -350,15 +361,17 @@ module.exports = grammar({
     // `if c then a [elseif c then a]* else b end` as a value (a total conditional — `else` required).
     // Distinct from `if_statement` (whose branches are statement lists); shares the keyword only.
     if_expression: $ => prec(-1, seq(
-      'if', field('condition', $._expression), 'then', field('consequence', $._expression),
-      repeat(seq('elseif', field('condition', $._expression), 'then', field('consequence', $._expression))),
-      'else', field('alternative', $._expression), 'end',
+      'if', field('condition', $._expression), 'then', field('consequence', valueArm($)),
+      repeat(seq('elseif', field('condition', $._expression), 'then', field('consequence', valueArm($)))),
+      'else', field('alternative', valueArm($)), 'end',
     )),
 
-    // `match subj  pat [when g] -> expr  … end` as a value. Each arm body is an expression.
+    // `match subj  pat [when g] -> expr  … end` as a value. Each arm body is an expression, or a jump.
     match_expression: $ => seq('match', field('subject', $._expression), repeat($.match_expression_arm), 'end'),
 
-    match_expression_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', field('body', $._expression)),
+    match_expression_arm: $ => seq(field('pattern', $._pattern), optional(seq('when', field('guard', $._expression))), '->', field('body', valueArm($))),
+
+
 
     // `import(spec)` — the dynamic/expression import (design/11 Slice 2b). Higher precedence than a plain
     // call so `import(x)` isn't read as the identifier `import` applied to `x`.

@@ -245,3 +245,65 @@ fn e(x) return match x  1 -> "a"  _ -> match x  2 -> "b"  _ -> "c" end end end
             (match_expression_arm
               (identifier)
               (string))))))))
+
+==================
+Value arms and branches that leave: return, break, continue
+==================
+
+fn label(r)
+  let v = match r
+    Ok(x) -> x
+    Error(e) -> return "failed"
+  end
+  for x in r do
+    let n = match x
+      0 -> continue
+      _ -> break
+    end
+  end
+  let y = if v then v else return end
+  return y
+end
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (identifier)
+    (let_declaration
+      (identifier)
+      (match_expression
+        (identifier)
+        (match_expression_arm
+          (tag_pattern
+            (type_identifier)
+            (identifier))
+          (identifier))
+        (match_expression_arm
+          (tag_pattern
+            (type_identifier)
+            (identifier))
+          (return_statement
+            (string)))))
+    (for_statement
+      (identifier)
+      (identifier)
+      (let_declaration
+        (identifier)
+        (match_expression
+          (identifier)
+          (match_expression_arm
+            (integer)
+            (continue_statement))
+          (match_expression_arm
+            (identifier)
+            (break_statement)))))
+    (let_declaration
+      (identifier)
+      (if_expression
+        (identifier)
+        (identifier)
+        (return_statement)))
+    (return_statement
+      (identifier))))

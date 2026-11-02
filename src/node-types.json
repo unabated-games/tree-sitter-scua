@@ -3793,6 +3793,10 @@
             "named": true
           },
           {
+            "type": "break_statement",
+            "named": true
+          },
+          {
             "type": "bytes_lit",
             "named": true
           },
@@ -3802,6 +3806,10 @@
           },
           {
             "type": "color",
+            "named": true
+          },
+          {
+            "type": "continue_statement",
             "named": true
           },
           {
@@ -3882,6 +3890,10 @@
           },
           {
             "type": "recv_wait",
+            "named": true
+          },
+          {
+            "type": "return_statement",
             "named": true
           },
           {
@@ -4069,6 +4081,10 @@
             "named": true
           },
           {
+            "type": "break_statement",
+            "named": true
+          },
+          {
             "type": "bytes_lit",
             "named": true
           },
@@ -4078,6 +4094,10 @@
           },
           {
             "type": "color",
+            "named": true
+          },
+          {
+            "type": "continue_statement",
             "named": true
           },
           {
@@ -4158,6 +4178,10 @@
           },
           {
             "type": "recv_wait",
+            "named": true
+          },
+          {
+            "type": "return_statement",
             "named": true
           },
           {
@@ -6413,6 +6437,10 @@
             "named": true
           },
           {
+            "type": "break_statement",
+            "named": true
+          },
+          {
             "type": "bytes_lit",
             "named": true
           },
@@ -6422,6 +6450,10 @@
           },
           {
             "type": "color",
+            "named": true
+          },
+          {
+            "type": "continue_statement",
             "named": true
           },
           {
@@ -6502,6 +6534,10 @@
           },
           {
             "type": "recv_wait",
+            "named": true
+          },
+          {
+            "type": "return_statement",
             "named": true
           },
           {
