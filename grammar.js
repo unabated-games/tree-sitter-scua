@@ -20,6 +20,12 @@ module.exports = grammar({
 
   extras: $ => [/\s/, $.line_comment, $.block_comment],
 
+  // A nested `/* … */` comment needs a counter, so src/scanner.c scans it. `_in_literal` never
+  // matches: it sits among each string's and template's text pieces, so the scanner can tell that a
+  // `/*` there is literal text (`"dev/*.pdf"`) and not a comment. Without it, a `/*` straight after
+  // an opening quote was read as a comment, since comments are extras and valid everywhere.
+  externals: $ => [$.block_comment, $._in_literal],
+
   // A contract clause's `label:` and a range's `start:` both begin `<ident> :`; and `a:b:c` is ambiguous
   // (range-with-step vs nested range). Either parse highlights identically, so let GLR pick.
   // The pattern-vs-expression ambiguities (`match subj` arms vs indexing/constructor-calls) are resolved
@@ -530,24 +536,24 @@ module.exports = grammar({
 
     // The closing delimiters are `token.immediate` so the lexer never skips extras (whitespace/comments)
     // inside a string — otherwise a `--` right after the opening `"` lexes as a line comment.
-    string: $ => seq('"', repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    string: $ => seq('"', repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)), $._in_literal)), token.immediate('"')),
 
     // An interned `key` literal `$"name"` (ADR-0037). The `"` is `token.immediate` so only `$"` (no space) opens one.
-    key_lit: $ => seq('$', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    key_lit: $ => seq('$', token.immediate('"'), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)), $._in_literal)), token.immediate('"')),
 
     // A `b"..."` byte-string literal (ADR-0072). `b"` is a single token: as `seq('b', …)` the word `b`
     // became a keyword, and every variable named `b` failed to parse (`fn(a, b)`, `Ok(b)`).
-    bytes_lit: $ => seq(token(prec(1, 'b"')), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    bytes_lit: $ => seq(token(prec(1, 'b"')), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)), $._in_literal)), token.immediate('"')),
 
     // A backtick template, read the way lexer.zig's `templateEnd` reads it: an escape, a `{{` / `}}`
     // brace escape (an escape_sequence, so it highlights like `\{`), a `{…}` hole, or literal text.
     // Only `{` opens a hole; a lone `}` is literal text (`` `\{"a": 1}` ``), which is why `}` is a
     // text alternative of its own rather than excluded.
-    interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, alias(token.immediate(prec(2, '{{')), $.escape_sequence), alias(token.immediate(prec(2, '}}')), $.escape_sequence), token.immediate(prec(1, /[^`\\{}]+|\}/)))), token.immediate('`')),
+    interpolated_string: $ => seq('`', repeat(choice($.escape_sequence, $.interpolation, alias(token.immediate(prec(2, '{{')), $.escape_sequence), alias(token.immediate(prec(2, '}}')), $.escape_sequence), token.immediate(prec(1, /[^`\\{}]+|\}/)), $._in_literal)), token.immediate('`')),
 
     // `{expr}` or `{expr:spec}` — the format spec is the mini-language `[align][0][width][.prec][type]`.
     // A hole's body is ordinary code, so a string, a nested template, a table literal's braces and a
-    // `--[[ … ]]` comment inside it are parsed as themselves and their `}` never closes the hole.
+    // `/* … */` comment inside it are parsed as themselves and their `}` never closes the hole.
     // The spec is everything from the first top-level `:` to the closing `}`, space before it or not
     // (`{x :>8}` is a spec to the compiler too).
     interpolation: $ => seq('{', $._expression, optional($.format_spec), '}'),
@@ -557,7 +563,7 @@ module.exports = grammar({
     // is NOT reserved (it's a valid identifier, e.g. `let path = [...]`). parser.zig reads the ident
     // `path` followed by a string token, so a space between them is allowed too. The string takes the
     // same escapes as any other, so `\"` does not end it.
-    path: $ => seq(token(prec(1, /path[ \t]*"/)), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)))), token.immediate('"')),
+    path: $ => seq(token(prec(1, /path[ \t]*"/)), repeat(choice($.escape_sequence, token.immediate(prec(1, /[^"\\]+/)), $._in_literal)), token.immediate('"')),
 
     // lexer.zig's `decodeEscapes`: `\n \t \r \e \0`, the escaped delimiters and backslash
     // (`\" \' \` \{ \} \\`), a backslash before a real newline, and `\u{HEX}` (1–6 hex digits).
@@ -567,9 +573,8 @@ module.exports = grammar({
     identifier: _ => /[a-z_][A-Za-z0-9_]*/,
     type_identifier: _ => /[A-Z][A-Za-z0-9_]*/,
 
-    // A block comment `--[[ … ]]` wins (higher token precedence, and it's longer when multi-line); a
-    // line comment is `--` then the rest of the line — including a bare `--` and an inner `--`.
-    block_comment: _ => token(prec(1, seq('--[[', /[^\]]*(\][^\]]+)*\]*/, ']]'))),
+    // A line comment is `--` then the rest of the line — including a bare `--` and an inner `--`. (A
+    // block comment `/* … */`, which nests, is the external scanner's: see `externals`.)
     line_comment: _ => token(seq('--', /[^\n]*/)),
   },
 });

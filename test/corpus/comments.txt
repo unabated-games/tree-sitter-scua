@@ -1,0 +1,93 @@
+==================
+line and block comments
+==================
+
+-- a line comment
+let a = 1 /* inline */ + 2 -- trailing
+/* a block
+   over two lines */
+let b = a
+
+---
+
+(source_file
+  (line_comment)
+  (let_declaration
+    (identifier)
+    (binary_expression
+      (integer)
+      (block_comment)
+      (integer)))
+  (line_comment)
+  (block_comment)
+  (let_declaration
+    (identifier)
+    (identifier)))
+
+==================
+block comments nest, three deep
+==================
+
+/* one /* two /* three */ two */ one */
+let a = 1
+
+---
+
+(source_file
+  (block_comment)
+  (let_declaration
+    (identifier)
+    (integer)))
+
+==================
+commented-out code holding ]] and comments
+==================
+
+/*
+let x = m[i[1]] -- old
+let y = [[1, 2]] /* inner */
+*/
+let z = m[i[1]]
+
+---
+
+(source_file
+  (block_comment)
+  (let_declaration
+    (identifier)
+    (index_expression
+      (identifier)
+      (index_expression
+        (identifier)
+        (integer)))))
+
+==================
+a /* inside a string or a line comment is text
+==================
+
+let a = "economy/* x"
+let b = "/*"
+let c = `/*{a}*/`
+-- see dev/*.pdf
+let d = 2 // 1
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (string))
+  (let_declaration
+    (identifier)
+    (string))
+  (let_declaration
+    (identifier)
+    (interpolated_string
+      (interpolation
+        (identifier))))
+  (line_comment)
+  (let_declaration
+    (identifier)
+    (binary_expression
+      (integer)
+      (integer))))

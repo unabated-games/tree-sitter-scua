@@ -162,7 +162,7 @@ let s = `{`inner {t.a}`} {`a:b`}`
 a block comment inside a hole
 ==================
 
-let s = `{t.a --[[ a } in a comment ]] }`
+let s = `{t.a /* a } in a /* nested */ comment */ }`
 
 ---
 
