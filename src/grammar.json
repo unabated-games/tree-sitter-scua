@@ -5170,6 +5170,10 @@
         },
         {
           "type": "STRING",
+          "value": "frame"
+        },
+        {
+          "type": "STRING",
           "value": "datetime"
         },
         {
@@ -5187,6 +5191,10 @@
         {
           "type": "STRING",
           "value": "key"
+        },
+        {
+          "type": "STRING",
+          "value": "secret"
         },
         {
           "type": "STRING",

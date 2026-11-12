@@ -182,3 +182,36 @@ end
       (assignment
         (identifier)
         (integer)))))
+
+==================
+secret and frame are type names
+==================
+
+record Login { username: string, password: secret }
+fn rows(f: frame, keys: { secret }) -> frame return f end
+let secret = 1
+
+---
+
+(source_file
+  (record_declaration
+    (type_identifier)
+    (record_field
+      (identifier)
+      (primitive_type))
+    (record_field
+      (identifier)
+      (primitive_type)))
+  (function_declaration
+    (identifier)
+    (identifier)
+    (primitive_type)
+    (identifier)
+    (array_type
+      (primitive_type))
+    (primitive_type)
+    (return_statement
+      (identifier)))
+  (let_declaration
+    (identifier)
+    (integer)))

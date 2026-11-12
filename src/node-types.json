@@ -11834,6 +11834,10 @@
     "named": true
   },
   {
+    "type": "frame",
+    "named": false
+  },
+  {
     "type": "gate",
     "named": false
   },
@@ -11980,6 +11984,10 @@
   },
   {
     "type": "return",
+    "named": false
+  },
+  {
+    "type": "secret",
     "named": false
   },
   {

@@ -87,3 +87,30 @@ print(a == b)
       (binary_expression
         (identifier)
         (identifier)))))
+
+==================
+escaped quotes in a call argument
+==================
+
+let login = json.decode("{\"username\": \"ann\", \"password\": \"hunter22\"}", Login)?
+
+---
+
+(source_file
+  (let_declaration
+    (identifier)
+    (try_expression
+      (call_expression
+        (field_expression
+          (identifier)
+          (identifier))
+        (string
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence)
+          (escape_sequence))
+        (type_identifier)))))
